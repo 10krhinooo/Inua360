@@ -1,11 +1,25 @@
+import { useLocation } from 'react-router-dom';
 import { Bell, User } from 'lucide-react';
 
 const Header = () => {
+  const location = useLocation();
+
+  const getPageTitle = (path: string) => {
+    if (path === '/dashboard') return 'Dashboard Overview';
+    if (path.startsWith('/dashboard/health')) return 'Business Health Report';
+    if (path.startsWith('/dashboard/alerts')) return 'Smart Alerts & Monitoring';
+    if (path.startsWith('/dashboard/funding')) return 'Funding Readiness & Loans';
+    if (path.startsWith('/dashboard/settings')) return 'Workspace Settings';
+    
+    return 'Dashboard';
+  };
+
+  const currentTitle = getPageTitle(location.pathname);
+
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-      <h1 className="text-lg font-semibold text-slate-900">
-        {/* We can make this dynamic later based on the route */}
-        Dashboard
+      <h1 className="text-lg font-semibold text-slate-900 transition-all">
+        {currentTitle}
       </h1>
       
       <div className="flex items-center gap-4">

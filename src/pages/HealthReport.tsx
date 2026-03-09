@@ -1,24 +1,67 @@
-import React from 'react';
-import { Activity, AlertTriangle, CheckCircle2, TrendingUp, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Activity, AlertTriangle, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { analyticsAPI } from '../services/api';
 
 const HealthReport: React.FC = () => {
-  // Mock data representing the response from your Django/FastAPI backend
-  const reportData = {
-    score: 78,
-    status: 'GOOD',
-    metrics: [
-      { label: 'Growth Potential', value: 85, level: 'High', color: 'bg-green-500' },
-      { label: 'Operational Efficiency', value: 60, level: 'Moderate', color: 'bg-yellow-500' },
-      { label: 'Funding Readiness', value: 75, level: 'Ready', color: 'bg-orange-500' },
-      { label: 'Compliance Risk', value: 20, level: 'Low', color: 'bg-slate-300' },
-    ],
-    // Mapping to the RISK_FLAG_COLS from app.py
-    insights: [
-      { icon: TrendingUp, title: 'Strong Cash Liquidity', desc: 'Your cash buffer is well above the industry average for your sector.', type: 'positive' },
-      { icon: ShieldCheck, title: 'Tax Compliant', desc: 'All required tax clearances are uploaded and verified.', type: 'positive' },
-      { icon: AlertTriangle, title: 'Moderate Debt Ratio', desc: 'Your current debt-to-equity ratio is creeping up. Monitor upcoming loan repayments.', type: 'warning' },
-    ]
-  };
+  const [reportData, setReportData] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHealthData = async () => {
+      try {
+        // Fetch historical data from Django
+        const response = await analyticsAPI.getHealthHistory();
+        
+        // Grab the most recent report (index 0)
+        if (response.data && response.data.length > 0) {
+          const latestReport = response.data[0];
+          
+          // Map the backend structure to our UI structure
+          setReportData({
+            score: latestReport.overall_score,
+            status: latestReport.health_category,
+            metrics: [
+              { label: 'Growth Potential', value: latestReport.growth_potential, level: latestReport.growth_potential > 70 ? 'High' : 'Moderate', color: 'bg-green-500' },
+              { label: 'Operational Efficiency', value: latestReport.operational_efficiency, level: 'Moderate', color: 'bg-yellow-500' },
+              { label: 'Funding Readiness', value: latestReport.funding_readiness, level: latestReport.funding_readiness > 70 ? 'Ready' : 'Not Ready', color: 'bg-orange-500' },
+              { label: 'Compliance Risk', value: latestReport.compliance_risk, level: latestReport.compliance_risk < 30 ? 'Low' : 'High', color: 'bg-slate-300' },
+            ],
+            // Map the JSON array of insights from the database
+            insights: latestReport.ai_insights.map((insight: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+              icon: insight.triggered ? AlertTriangle : CheckCircle2,
+              title: insight.flag.replace('_', ' ').toUpperCase(),
+              desc: `AI flagged this metric based on your current data.`,
+              type: insight.triggered ? 'warning' : 'positive'
+            }))
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching health report:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHealthData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+        <Activity className="h-10 w-10 animate-pulse text-blue-500 mb-4" />
+        <p>Loading your AI insights...</p>
+      </div>
+    );
+  }
+
+  if (!reportData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+        <ShieldCheck className="h-10 w-10 text-slate-300 mb-4" />
+        <p>No health data available. Please complete your business profile setup.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -83,7 +126,7 @@ const HealthReport: React.FC = () => {
           <h2 className="mb-6 text-lg font-semibold text-slate-900">Performance Breakdown</h2>
           
           <div className="space-y-6">
-            {reportData.metrics.map((metric) => (
+            {reportData.metrics.map((metric: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
               <div key={metric.label}>
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="font-medium text-slate-700">{metric.label}</span>
@@ -103,25 +146,29 @@ const HealthReport: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Section: AI Insights (Mapped from risk_flags) */}
+      {/* Bottom Section: AI Insights */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
           <h2 className="text-lg font-semibold text-slate-900">AI Risk & Opportunity Analysis</h2>
         </div>
         <div className="divide-y divide-slate-100">
-          {reportData.insights.map((insight, idx) => (
-            <div key={idx} className="flex items-start gap-4 p-6 hover:bg-slate-50 transition-colors">
-              <div className={`mt-1 rounded-full p-2 ${
-                insight.type === 'positive' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
-              }`}>
-                <insight.icon className="h-5 w-5" />
+          {reportData.insights.length > 0 ? (
+            reportData.insights.map((insight: any, idx: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
+              <div key={idx} className="flex items-start gap-4 p-6 hover:bg-slate-50 transition-colors">
+                <div className={`mt-1 rounded-full p-2 ${
+                  insight.type === 'positive' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
+                }`}>
+                  <insight.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900">{insight.title}</h3>
+                  <p className="mt-1 text-sm text-slate-600">{insight.desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold text-slate-900">{insight.title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{insight.desc}</p>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="p-6 text-center text-slate-500">No specific flags detected at this time.</div>
+          )}
         </div>
       </div>
 

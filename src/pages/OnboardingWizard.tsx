@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, DollarSign, FileCheck, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { analyticsAPI } from '../services/api';
 
 const steps = [
   { id: 1, name: 'Business Profile', icon: Building2 },
@@ -11,8 +12,8 @@ const steps = [
 const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // This state maps directly to the SMEInput model in your FastAPI backend
   const [formData, setFormData] = useState({
     business_stage: 'startup',
     sector: 'retail',
@@ -49,12 +50,20 @@ const OnboardingWizard: React.FC = () => {
     }
   };
 
-  const submitOnboarding = () => {
-    // TODO: POST this formData to Django, which saves it and triggers the FastAPI models
-    console.log('Submitting SME Data to backend:', formData);
-    
-    // Update global state/context to indicate onboarding is complete, then navigate
-    navigate('/dashboard');
+  const submitOnboarding = async () => {
+    setIsSubmitting(true);
+    try {
+      await analyticsAPI.createProfile(formData as any); // eslint-disable-line @typescript-eslint/no-explicit-any 
+      
+      await analyticsAPI.generateInsights();
+      
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Failed to submit onboarding data:', error);
+      alert('There was an issue saving your profile. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -91,7 +100,7 @@ const OnboardingWizard: React.FC = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 min-h-[400px] flex flex-col">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 min-h-100 flex flex-col">
           
           <div className="flex-1">
             {/* STEP 1: Business Profile */}
@@ -183,7 +192,7 @@ const OnboardingWizard: React.FC = () => {
             <button
               type="button"
               onClick={handleBack}
-              disabled={currentStep === 1}
+              disabled={currentStep === 1 || isSubmitting}
               className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
                 currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-100'
               }`}
@@ -193,10 +202,11 @@ const OnboardingWizard: React.FC = () => {
             <button
               type="button"
               onClick={handleNext}
-              className="flex items-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {currentStep === steps.length ? 'Complete Setup' : 'Next Step'} 
-              {currentStep < steps.length && <ArrowRight className="h-4 w-4" />}
+              {isSubmitting ? 'Processing...' : currentStep === steps.length ? 'Complete Setup' : 'Next Step'} 
+              {!isSubmitting && currentStep < steps.length && <ArrowRight className="h-4 w-4" />}
             </button>
           </div>
 
