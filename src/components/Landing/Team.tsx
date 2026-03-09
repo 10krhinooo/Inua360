@@ -43,7 +43,7 @@ const Team: React.FC = () => {
             <li key={person.name} className="flex flex-col items-center text-center">
               <img className="mx-auto h-32 w-32 rounded-full object-cover shadow-sm border border-slate-200" src={person.imageUrl} alt={person.name} />
               <h3 className="mt-6 text-lg font-semibold leading-7 tracking-tight text-slate-900">{person.name}</h3>
-              <p className="text-sm leading-6 text-blue-600 font-medium">{person.role}</p>
+              <p className="text-sm leading-6 text-[#F07B20] font-medium">{person.role}</p>
               <p className="mt-4 text-sm leading-6 text-slate-500">{person.description}</p>
             </li>
           ))}
