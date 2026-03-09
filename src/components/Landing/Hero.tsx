@@ -1,25 +1,57 @@
-import React from 'react'
+import React from 'react';
+import { Activity, BellRing, Landmark } from 'lucide-react';
+import './Hero.css';
 
 const Hero: React.FC = () => {
   return (
-    <section className="px-6 py-20 text-center lg:px-24 bg-white flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl">
-        Understand Your Business. <br className="hidden sm:block" />
-        <span className="text-blue-600">Avoid Risks. Get Funded.</span>
-      </h1>
-      <p className="mt-6 text-lg leading-8 text-slate-600 max-w-2xl mx-auto">
-        Inua360 is an AI-powered business intelligence platform designed specifically for SMEs. Connect your data to unlock instant health reports, smart alerts, and get matched with lenders.
-      </p>
-      <div className="mt-10 flex items-center justify-center gap-x-6">
-        <a href="/register" className="rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all">
-          Get Started for Free
-        </a>
-        <a href="/login" className="text-sm font-semibold leading-6 text-slate-900 hover:text-blue-600 transition-all">
-          Log in to Dashboard <span aria-hidden="true">→</span>
-        </a>
+    <section className="hero-wrapper">
+      <div className="hero-inner">
+
+        <h1 className="hero-headline">
+          <span className="hero-hl-line">Understand Your Business.</span>
+          <span className="hero-hl-line">
+            Avoid Risks. <span className="hero-hl-orange">Get Funded.</span>
+          </span>
+        </h1>
+
+        <div className="hero-tagstrip">
+          <div className="hero-tag-item hi">
+            <Activity size={18} className="hero-tag-icon" strokeWidth={2.5} />
+            Health Reports
+          </div>
+          <span className="hero-tag-sep"></span>
+          <div className="hero-tag-item">
+            <BellRing size={18} className="hero-tag-icon" strokeWidth={2.5} />
+            Smart Alerts
+          </div>
+          <span className="hero-tag-sep"></span>
+          <div className="hero-tag-item hi">
+            <Landmark size={18} className="hero-tag-icon" strokeWidth={2.5} />
+            Lender Matching
+          </div>
+        </div>
+
+        <p className="hero-description">
+          Connect your data to unlock <strong>instant health reports</strong>,
+          smart alerts, and personalized lender matching. 
+        </p>
+
+        <div className="hero-cta-group">
+          <a href="/register" className="hero-btn-primary">
+            Get Started for Free
+          </a>
+          <a href="/login" className="hero-btn-secondary">
+            Log in to Dashboard <span className="hero-btn-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div className="hero-scroll-hint">
+        <span className="hero-scroll-label">Scroll</span>
+        <div className="hero-scroll-line"></div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
