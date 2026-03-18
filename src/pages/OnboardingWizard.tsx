@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, DollarSign, FileCheck, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { analyticsAPI } from '../services/api';
@@ -13,30 +13,65 @@ const OnboardingWizard: React.FC = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   
-  const [formData, setFormData] = useState({
-    business_stage: 'startup',
-    sector: 'retail',
-    age_of_business: 1,
-    employee_count: 1,
-    revenue: 0,
-    profit_margin: 0,
-    bank_balance: 0,
-    tax_registered: true,
-    licenses_up_to_date: true,
+  const [formData, setFormData] = useState(() => {
+    const savedData = sessionStorage.getItem('inua360_onboarding');
+    if (savedData) {
+      try {
+        return JSON.parse(savedData);
+      } catch (e) {
+        console.error('Failed to parse onboarding data', e);
+      }
+    }
+    return {
+      business_stage: 'startup',
+      sector: 'retail',
+      age_of_business: '' as number | string,
+      employee_count: '' as number | string,
+      revenue: '' as number | string,
+      profit_margin: '' as number | string,
+      bank_balance: '' as number | string,
+      tax_registered: true,
+      licenses_up_to_date: true,
+    };
   });
 
+  useEffect(() => {
+    sessionStorage.setItem('inua360_onboarding', JSON.stringify(formData));
+  }, [formData]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setError('');
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     
-    setFormData(prev => ({
+    setFormData((prev: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       ...prev,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
+  const validateStep = (step: number) => {
+    const isStep1Valid = formData.sector !== '' && formData.business_stage !== '' && 
+                         formData.age_of_business !== '' && formData.employee_count !== '';
+                         
+    const isStep2Valid = formData.revenue !== '' && formData.profit_margin !== '' && 
+                         formData.bank_balance !== '';
+
+    if (step === 1) return isStep1Valid;
+    if (step === 2) return isStep2Valid;
+    if (step === 3) return isStep1Valid && isStep2Valid; // Final verification of all inputs
+    
+    return true;
+  };
+
   const handleNext = () => {
+    if (!validateStep(currentStep)) {
+      setError('Please fill in all required fields before proceeding.');
+      return;
+    }
+
     if (currentStep < steps.length) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -52,15 +87,26 @@ const OnboardingWizard: React.FC = () => {
 
   const submitOnboarding = async () => {
     setIsSubmitting(true);
+    setError('');
     try {
-      await analyticsAPI.createProfile(formData as any); // eslint-disable-line @typescript-eslint/no-explicit-any 
+      // Convert string numbers back to actual numbers for the backend
+      const payload = {
+        ...formData,
+        age_of_business: Number(formData.age_of_business),
+        employee_count: Number(formData.employee_count),
+        revenue: Number(formData.revenue),
+        profit_margin: Number(formData.profit_margin),
+        bank_balance: Number(formData.bank_balance),
+      };
+      await analyticsAPI.createProfile(payload as any); // eslint-disable-line @typescript-eslint/no-explicit-any 
       
       await analyticsAPI.generateInsights();
       
+      sessionStorage.removeItem('inua360_onboarding');
       navigate('/dashboard');
     } catch (error) {
       console.error('Failed to submit onboarding data:', error);
-      alert('There was an issue saving your profile. Please try again.');
+      setError('There was an issue saving your profile. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -80,18 +126,18 @@ const OnboardingWizard: React.FC = () => {
           <div className="flex items-center justify-between relative">
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 rounded-full z-0"></div>
             <div 
-              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-blue-600 rounded-full z-0 transition-all duration-500"
+              className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-orange-500 rounded-full z-0 transition-all duration-500"
               style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
             ></div>
             
             {steps.map((step) => (
               <div key={step.id} className="relative z-10 flex flex-col items-center gap-2 bg-slate-50 px-2">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors duration-300 ${
-                  currentStep >= step.id ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white text-slate-400'
+                  currentStep >= step.id ? 'border-orange-500 bg-orange-500 text-white shadow-sm' : 'border-slate-300 bg-white text-slate-400'
                 }`}>
                   {currentStep > step.id ? <CheckCircle2 className="h-6 w-6" /> : <step.icon className="h-5 w-5" />}
                 </div>
-                <span className={`text-xs font-medium ${currentStep >= step.id ? 'text-blue-600' : 'text-slate-500'}`}>
+                <span className={`text-xs font-medium ${currentStep >= step.id ? 'text-orange-600' : 'text-slate-500'}`}>
                   {step.name}
                 </span>
               </div>
@@ -100,17 +146,21 @@ const OnboardingWizard: React.FC = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 min-h-100 flex flex-col">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 flex flex-col overflow-hidden">
           
-          <div className="flex-1">
-            {/* STEP 1: Business Profile */}
-            {currentStep === 1 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+          <div className="flex-1 relative">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out items-start"
+              style={{ transform: `translateX(-${(currentStep - 1) * 100}%)` }}
+            >
+              {/* STEP 1: Business Profile */}
+              <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 1 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className="space-y-6">
                 <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Business Profile</h3>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Industry Sector</label>
-                    <select name="sector" value={formData.sector} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6 bg-white">
+                    <select name="sector" value={formData.sector} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6 bg-white">
                       <option value="retail">Retail</option>
                       <option value="manufacturing">Manufacturing</option>
                       <option value="services">Services</option>
@@ -119,7 +169,7 @@ const OnboardingWizard: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Business Stage</label>
-                    <select name="business_stage" value={formData.business_stage} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6 bg-white">
+                    <select name="business_stage" value={formData.business_stage} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6 bg-white">
                       <option value="startup">Startup (0-2 years)</option>
                       <option value="growth">Growth (2-5 years)</option>
                       <option value="mature">Mature (5+ years)</option>
@@ -127,46 +177,46 @@ const OnboardingWizard: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Age of Business (Years)</label>
-                    <input type="number" name="age_of_business" min="0" value={formData.age_of_business} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6" />
+                    <input type="number" name="age_of_business" min="0" value={formData.age_of_business} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Total Employees</label>
-                    <input type="number" name="employee_count" min="1" value={formData.employee_count} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6" />
+                    <input type="number" name="employee_count" min="1" value={formData.employee_count} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
                   </div>
                 </div>
               </div>
-            )}
+              </div>
 
-            {/* STEP 2: Financial Snapshot */}
-            {currentStep === 2 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+              {/* STEP 2: Financial Snapshot */}
+              <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 2 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className="space-y-6">
                 <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Financial Snapshot</h3>
                 <p className="text-sm text-slate-500 mb-4">Provide rough estimates. These will be used to generate your initial funding readiness score.</p>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Annual Revenue (KSh)</label>
-                    <input type="number" name="revenue" value={formData.revenue} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6" />
+                    <input type="number" name="revenue" value={formData.revenue} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Profit Margin (%)</label>
-                    <input type="number" name="profit_margin" value={formData.profit_margin} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6" />
+                    <input type="number" name="profit_margin" value={formData.profit_margin} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium leading-6 text-slate-900">Current Bank Balance (KSh)</label>
-                    <input type="number" name="bank_balance" value={formData.bank_balance} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6" />
+                    <input type="number" name="bank_balance" value={formData.bank_balance} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
                   </div>
                 </div>
               </div>
-            )}
+              </div>
 
-            {/* STEP 3: Compliance & Docs */}
-            {currentStep === 3 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+              {/* STEP 3: Compliance & Docs */}
+              <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 3 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className="space-y-6">
                 <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Compliance Status</h3>
                 <div className="space-y-4">
                   <div className="relative flex items-start">
                     <div className="flex h-6 items-center">
-                      <input id="tax" name="tax_registered" type="checkbox" checked={formData.tax_registered} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600" />
+                      <input id="tax" name="tax_registered" type="checkbox" checked={formData.tax_registered} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600" />
                     </div>
                     <div className="ml-3 text-sm leading-6">
                       <label htmlFor="tax" className="font-medium text-slate-900">KRA PIN Registered</label>
@@ -175,7 +225,7 @@ const OnboardingWizard: React.FC = () => {
                   </div>
                   <div className="relative flex items-start">
                     <div className="flex h-6 items-center">
-                      <input id="licenses" name="licenses_up_to_date" type="checkbox" checked={formData.licenses_up_to_date} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600" />
+                      <input id="licenses" name="licenses_up_to_date" type="checkbox" checked={formData.licenses_up_to_date} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600" />
                     </div>
                     <div className="ml-3 text-sm leading-6">
                       <label htmlFor="licenses" className="font-medium text-slate-900">Operating Licenses Up to Date</label>
@@ -184,30 +234,38 @@ const OnboardingWizard: React.FC = () => {
                   </div>
                 </div>
               </div>
-            )}
+              </div>
+            </div>
           </div>
 
           {/* Navigation Footer */}
-          <div className="mt-10 flex items-center justify-between border-t border-slate-200 pt-6">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 1 || isSubmitting}
-              className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
-                currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              <ArrowLeft className="h-4 w-4" /> Back
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={isSubmitting}
-              className="flex items-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Processing...' : currentStep === steps.length ? 'Complete Setup' : 'Next Step'} 
-              {!isSubmitting && currentStep < steps.length && <ArrowRight className="h-4 w-4" />}
-            </button>
+          <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-6">
+            {error && (
+              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 font-medium text-center border border-red-100">
+                {error}
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={currentStep === 1 || isSubmitting}
+                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
+                  currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <ArrowLeft className="h-4 w-4" /> Back
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={isSubmitting}
+                className="flex items-center gap-2 rounded-md bg-orange-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Processing...' : currentStep === steps.length ? 'Complete Setup' : 'Next Step'} 
+                {!isSubmitting && currentStep < steps.length && <ArrowRight className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
         </div>

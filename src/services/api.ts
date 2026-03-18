@@ -34,7 +34,17 @@ apiClient.interceptors.request.use(
   }
 );
 
-// --- TYPESCRIPT INTERFACES ---
+export interface AlertPreferences {
+  email_notifications: boolean;
+  categories: {
+    sales: boolean;
+    inventory: boolean;
+    expenses: boolean;
+    compliance: boolean;
+    system: boolean;
+  };
+}
+
 export interface BusinessProfilePayload {
   business_name: string;
   sector: string;
@@ -47,6 +57,7 @@ export interface BusinessProfilePayload {
   tax_registered: boolean;
   licenses_up_to_date: boolean;
   additional_metrics?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  alert_preferences?: AlertPreferences;
 }
 
 // --- API ENDPOINT WRAPPERS ---
@@ -58,6 +69,9 @@ export const analyticsAPI = {
   generateInsights: () => apiClient.post('/analytics/profile/generate-insights/'),
   
   getHealthHistory: () => apiClient.get('/analytics/health-history/'),
+
+  getAlerts: () => apiClient.get('/analytics/alerts/'),
+  resolveAlert: (id: number) => apiClient.patch(`/analytics/alerts/${id}/`, { is_resolved: true }),
 };
 
 export default apiClient;

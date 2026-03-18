@@ -8,6 +8,7 @@ import HealthReport from './pages/HealthReport';
 import Funding from './pages/Funding';
 import Alerts from './pages/Alerts';
 import OnboardingWizard from './pages/OnboardingWizard';
+import Settings from './pages/Settings';
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="health" element={<HealthReport />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="funding" element={<Funding />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

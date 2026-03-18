@@ -48,7 +48,7 @@ const HealthReport: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
-        <Activity className="h-10 w-10 animate-pulse text-blue-500 mb-4" />
+        <Activity className="h-10 w-10 animate-pulse text-orange-500 mb-4" />
         <p>Loading your AI insights...</p>
       </div>
     );
@@ -69,7 +69,7 @@ const HealthReport: React.FC = () => {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <Activity className="h-6 w-6 text-blue-600" />
+          <Activity className="h-6 w-6 text-orange-600" />
           Business Health Report
         </h1>
         <p className="mt-1 text-sm text-slate-500">
