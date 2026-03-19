@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import LenderLandingPage from './pages/LenderLandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import DashboardPage from './pages/DashboardPage';
@@ -8,15 +9,17 @@ import HealthReport from './pages/HealthReport';
 import Funding from './pages/Funding';
 import Alerts from './pages/Alerts';
 import OnboardingWizard from './pages/OnboardingWizard';
-import Settings from './pages/Settings';
+
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
-
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/for-lenders" element={<LenderLandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -27,7 +30,8 @@ function App() {
           <Route path="health" element={<HealthReport />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="funding" element={<Funding />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

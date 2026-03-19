@@ -12,18 +12,13 @@ const apiClient = axios.create({
 });
 
 // --- FIREBASE AUTH INTERCEPTOR ---
-// This ensures every request sends the Firebase token to Django automatically
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      // TODO: Replace this with actual Firebase auth logic
-      
-      // Temporary placeholder for local testing
       const token = localStorage.getItem('firebase_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      
       return config;
     } catch (error) {
       return Promise.reject(error);
@@ -61,6 +56,12 @@ export interface BusinessProfilePayload {
 }
 
 // --- API ENDPOINT WRAPPERS ---
+export const authAPI = {
+  register: (data: any) => apiClient.post('/auth/register/', data),
+  login: (data: any) => apiClient.post('/auth/login/', data),
+  googleAuth: (idToken: string) => apiClient.post('/auth/google/', { id_token: idToken }),
+};
+
 export const analyticsAPI = {
   getProfile: () => apiClient.get('/analytics/profile/'),
   createProfile: (data: BusinessProfilePayload) => apiClient.post('/analytics/profile/', data),
@@ -73,5 +74,6 @@ export const analyticsAPI = {
   getAlerts: () => apiClient.get('/analytics/alerts/'),
   resolveAlert: (id: number) => apiClient.patch(`/analytics/alerts/${id}/`, { is_resolved: true }),
 };
+
 
 export default apiClient;

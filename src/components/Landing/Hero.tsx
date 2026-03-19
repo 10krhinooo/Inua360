@@ -1,54 +1,46 @@
 import React from 'react';
-import { Activity, BellRing, Landmark } from 'lucide-react';
+import { Activity, BellRing, Landmark, ShieldCheck } from 'lucide-react';
 import './Hero.css';
 
 const Hero: React.FC = () => {
   return (
-    <section className="hero-wrapper">
-      <div className="hero-inner">
-
-        <h1 className="hero-headline">
-          <span className="hero-hl-line">Understand Your Business.</span>
-          <span className="hero-hl-line">
-            Avoid Risks. <span className="hero-hl-orange">Get Funded.</span>
-          </span>
-        </h1>
-
-        <div className="hero-tagstrip">
-          <div className="hero-tag-item hi">
-            <Activity size={18} className="hero-tag-icon" strokeWidth={2.5} />
-            Health Reports
+    <section className="hero-section">
+      <div className="hero-container">
+        <div className="hero-content">
+          <div className="hero-tagstrip">
+            <span className="hero-tag-pill">
+              <Activity size={14} className="text-[#2E9B4E]" />
+              Kenya's #1 SME Health Platform
+            </span>
           </div>
-          <span className="hero-tag-sep"></span>
-          <div className="hero-tag-item">
-            <BellRing size={18} className="hero-tag-icon" strokeWidth={2.5} />
-            Smart Alerts
+          
+          <h1 className="hero-headline">
+            Know Your Business Health. <br />
+            <span>Access Funding Faster.</span>
+          </h1>
+          
+          <p className="hero-description">
+            Inua360 uses AI to monitor your SMEs' vital signs, ensure compliance, and match you with the right lenders when you're ready to grow.
+          </p>
+
+          <div className="hero-cta-group">
+            <a href="/register" className="btn-primary">
+              Get Your Health Report Free →
+            </a>
+            <a href="#how-it-works" className="btn-secondary">
+              See How It Works
+            </a>
           </div>
-          <span className="hero-tag-sep"></span>
-          <div className="hero-tag-item hi">
-            <Landmark size={18} className="hero-tag-icon" strokeWidth={2.5} />
-            Lender Matching
+
+          <div className="hero-trust">
+            <span className="trust-txt">Trusted features:</span>
+            <div className="trust-icons">
+              <div className="trust-item"><ShieldCheck size={16} /> Credit Scoring</div>
+              <div className="trust-item"><BellRing size={16} /> Real-time Alerts</div>
+              <div className="trust-item"><Landmark size={16} /> Lender Matching</div>
+            </div>
           </div>
         </div>
-
-        <p className="hero-description">
-          Connect your data to unlock <strong>instant health reports</strong>,
-          smart alerts, and personalized lender matching. 
-        </p>
-
-        <div className="hero-cta-group">
-          <a href="/register" className="hero-btn-primary">
-            Get Started for Free
-          </a>
-          <a href="/login" className="hero-btn-secondary">
-            Log in to Dashboard <span className="hero-btn-arrow">→</span>
-          </a>
-        </div>
-      </div>
-
-      <div className="hero-scroll-hint">
-        <span className="hero-scroll-label">Scroll</span>
-        <div className="hero-scroll-line"></div>
       </div>
     </section>
   );

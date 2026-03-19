@@ -59,26 +59,26 @@ const DashboardPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
-        <Activity className="h-10 w-10 animate-pulse text-orange-500 mb-4" />
+        <Activity className="h-10 w-10 animate-pulse text-[#F07B20] mb-4" />
         <p>Loading your dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-6">
       
       {/* Page Header & Action Button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
-          <p className="mt-1 text-sm text-slate-500">Welcome back! Here are your latest business intelligence metrics.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 px-1">Overview</h1>
+          <p className="mt-1 text-sm text-slate-500 px-1">Welcome back. Track your business growth metrics.</p>
         </div>
         
         <button 
           onClick={handleGenerateReport}
           disabled={isGenerating}
-          className="flex items-center justify-center w-full sm:w-auto gap-2 rounded-lg bg-linear-to-r from-orange-500 to-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
+          className="flex items-center gap-2 rounded-xl bg-[#0f172a] px-5 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-slate-800 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           <RefreshCw className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
           {isGenerating ? 'Running Scan...' : 'Run New AI Scan'}
@@ -89,115 +89,97 @@ const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         
         {/* Health Score Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm hover:shadow-md transition-all group">
-          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-50 transition-transform group-hover:scale-110"></div>
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
-                  <Activity className="h-5 w-5" />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-700">Health Score</h3>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-orange-100 transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-green-50/50 transition-transform group-hover:scale-110"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Health Score</h3>
+              <div className="p-2 bg-green-50 rounded-lg">
+                <Activity className="h-5 w-5 text-green-500" />
               </div>
-              <span className="flex items-center text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                <TrendingUp className="h-3 w-3 mr-1" /> +2.5%
-              </span>
             </div>
-            <div>
-              <p className="text-4xl font-extrabold text-slate-900 tracking-tight">
-                {dashboardData.healthScore}
-                <span className="text-lg text-slate-400 font-medium ml-1">/100</span>
-              </p>
+            <p className="mt-4 text-5xl font-black text-slate-900">
+              {dashboardData.healthScore}
+              <span className="text-xl text-slate-300 font-bold">/100</span>
+            </p>
+            <div className="mt-2 text-xs font-bold text-green-600 flex items-center gap-1">
+                <TrendingUp size={12} /> +2.5% this month
             </div>
-            <Link to="/dashboard/health" className="mt-5 inline-flex items-center text-sm font-semibold text-orange-600 hover:text-orange-700 w-fit group-hover:underline">
-              View full report <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-            </Link>
           </div>
+          <Link to="/dashboard/health" className="mt-4 flex items-center gap-1 text-sm font-bold text-[#F07B20] hover:translate-x-1 transition-transform relative z-10">
+            View full report <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
         {/* Alerts Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm hover:shadow-md transition-all group">
-          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-red-50 transition-transform group-hover:scale-110"></div>
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 text-red-600">
-                  <BellRing className="h-5 w-5" />
-                </div>
-                <h3 className="text-sm font-semibold text-slate-700">Active Alerts</h3>
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-orange-100 transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-50/50 transition-transform group-hover:scale-110"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Risk Alerts</h3>
+              <div className={`p-2 rounded-lg ${dashboardData.activeAlerts > 0 ? 'bg-orange-50' : 'bg-slate-50'}`}>
+                <BellRing className={`h-5 w-5 ${dashboardData.activeAlerts > 0 ? 'text-orange-500' : 'text-slate-300'}`} />
               </div>
-              {dashboardData.activeAlerts > 0 && (
-                <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
-              )}
             </div>
-            <div>
-              <p className="text-4xl font-extrabold text-slate-900 tracking-tight">
-                {dashboardData.activeAlerts}
-              </p>
-            </div>
-            <Link to="/dashboard/alerts" className="mt-5 inline-flex items-center text-sm font-semibold text-orange-600 hover:text-orange-700 w-fit group-hover:underline">
-              Review alerts <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-            </Link>
+            <p className="mt-4 text-5xl font-black text-slate-900">
+              {dashboardData.activeAlerts}
+            </p>
           </div>
+          <Link to="/dashboard/alerts" className="mt-4 flex items-center gap-1 text-sm font-bold text-[#F07B20] hover:translate-x-1 transition-transform relative z-10">
+            Review alerts <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
         {/* Funding Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm hover:shadow-md transition-all group sm:col-span-2 lg:col-span-1">
-          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-green-50 transition-transform group-hover:scale-110"></div>
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
-                  <Landmark className="h-5 w-5" />
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-orange-100 transition-all duration-300 relative overflow-hidden group">
+           <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-50/50 transition-transform group-hover:scale-110"></div>
+           <div className="relative z-10">
+            <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Funding Match</h3>
+                <div className="p-2 bg-blue-50 rounded-lg">
+                <Landmark className="h-5 w-5 text-blue-500" />
                 </div>
-                <h3 className="text-sm font-semibold text-slate-700">Funding Match</h3>
-              </div>
             </div>
-            <div>
-              <p className={`text-3xl font-extrabold tracking-tight ${dashboardData.fundingStatus === 'Ready' ? 'text-green-600' : 'text-slate-700'}`}>
+            <p className={`mt-4 text-4xl font-black ${dashboardData.fundingStatus === 'Ready' ? 'text-[#F07B20]' : 'text-slate-700'}`}>
                 {dashboardData.fundingStatus}
-              </p>
-            </div>
-            <Link to="/dashboard/funding" className="mt-5 inline-flex items-center text-sm font-semibold text-orange-600 hover:text-orange-700 w-fit group-hover:underline">
-              Explore loan offers <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-            </Link>
+            </p>
           </div>
+          <Link to="/dashboard/funding" className="mt-4 flex items-center gap-1 text-sm font-bold text-[#F07B20] hover:translate-x-1 transition-transform relative z-10">
+            Explore offers <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
       </div>
       
       {/* Recent Activity Section */}
-      <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[300px]">
         <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-5">
-          <h2 className="text-lg font-bold text-slate-900">Historical Scans & Activity</h2>
+          <h2 className="text-lg font-bold text-slate-900">Recent Activity & Scans</h2>
         </div>
         
         {recentHistory.length > 0 ? (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-50">
             {recentHistory.map((record) => (
-              <div key={record.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 hover:bg-orange-50/30 transition-colors gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-100">
-                    <Clock className="h-6 w-6 text-orange-600" />
+              <div key={record.id} className="flex items-center justify-between p-6 hover:bg-slate-50/50 transition-colors group">
+                <div className="flex items-center gap-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 group-hover:bg-white transition-colors border border-orange-100/30">
+                    <Clock className="h-5 w-5 text-slate-400 group-hover:text-[#F07B20] transition-colors" />
                   </div>
                   <div>
-                    <p className="text-base font-semibold text-slate-900">AI Health Scan Completed</p>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm font-bold text-slate-900">AI Health Scan Completed</p>
+                    <p className="text-xs font-medium text-slate-400">
                       {new Date(record.generated_at).toLocaleDateString('en-US', { 
-                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
                       })}
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                  <p className="text-lg font-bold text-slate-900">
-                    {record.overall_score} <span className="text-sm text-slate-400 font-normal">/100</span>
-                  </p>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    record.health_category === 'Excellent' ? 'bg-green-100 text-green-700' :
-                    record.health_category === 'Good' ? 'bg-blue-100 text-blue-700' :
-                    record.health_category === 'Fair' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
+                <div className="text-right">
+                  <p className="text-sm font-black text-slate-900">{record.overall_score}%</p>
+                  <span className={`inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border shadow-sm ${
+                    record.overall_score >= 80 ? 'bg-green-50 text-green-700 border-green-100' : 
+                    record.overall_score >= 60 ? 'bg-orange-50 text-orange-700 border-orange-100' : 
+                    'bg-red-50 text-red-700 border-red-100'
                   }`}>
                     {record.health_category || 'Evaluated'}
                   </span>
@@ -206,12 +188,10 @@ const DashboardPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center text-slate-500 flex flex-col items-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
-              <Clock className="h-8 w-8 text-slate-400" />
-            </div>
-            <p className="text-base font-medium text-slate-900">No recent activity detected</p>
-            <p className="text-sm mt-1 max-w-sm">Generate a new health report to see your history and track your business growth over time.</p>
+          <div className="flex flex-col items-center justify-center p-12 text-slate-400">
+            <Clock className="h-12 w-12 mb-4 opacity-20" />
+            <p className="font-bold">No activity history</p>
+            <p className="text-sm">Run a scan to see your business growth data.</p>
           </div>
         )}
       </div>

@@ -1,0 +1,122 @@
+.final-cta-section {
+  padding: 80px 24px;
+  background-color: #f97316; /* Inua360 Orange */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1; /* Ensure it stays in the flow */
+}
+
+/* Explicitly disable all pseudo-elements to avoid any accidental text replication or background layering */
+.final-cta-section::before,
+.final-cta-section::after {
+  content: none !important;
+  display: none !important;
+}
+
+@keyframes wave-move {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.cta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 8px 20px;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: white;
+  margin-bottom: 32px;
+  letter-spacing: 0.05em;
+}
+
+.cta-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 48px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: -0.04em;
+}
+
+.cta-title span.highlight {
+  color: #0f172a; /* Dark contrast */
+}
+
+.btn-final {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #0f172a; /* Dark contrast button on orange bg */
+  color: white;
+  padding: 22px 56px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+.btn-final:hover {
+  background: #1e293b;
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+.cta-trust-line {
+  margin-top: 48px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.social-proof {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.avatar-group {
+  display: flex;
+  margin-right: 8px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #F07B20;
+  margin-left: -15px;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.avatar:first-child { margin-left: 0; }
+
+.proof-text {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.9);
+}

@@ -24,17 +24,9 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div className="footer-brand-col">
             <a href="#" className="footer-logo">
-              <div className="footer-logo-mark">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="white" stroke-width="1.5" fill="none" />
-                  <path d="M8 12c0-2.21 1.79-4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" />
-                  <path d="M16 12c0 2.21-1.79 4-4 4" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" />
-                  <circle cx="12" cy="12" r="2" fill="white" />
-                </svg>
-              </div>
+              <img src="/logo.png" alt="Inua360 Logo" className="h-10 w-auto" />
               <div className="footer-logo-text">
-                <div className="footer-logo-name">Inua360</div>
-                <div className="footer-logo-sub">AI Business Intelligence</div>
+                <div className="footer-logo-sub" style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '4px' }}>AI Business Intelligence</div>
               </div>
             </a>
             <p className="footer-brand-desc">
@@ -91,11 +83,10 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-
         {/* ── BOTTOM BAR ── */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2025 <span>Inua360</span>. All rights reserved.
+            © 2026 Inua360. All rights reserved.
           </p>
           <div className="footer-legal-links">
             <a href="#">Privacy Policy</a>
