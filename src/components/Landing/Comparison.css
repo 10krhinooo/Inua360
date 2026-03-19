@@ -1,8 +1,9 @@
 .comparison-section {
   padding: 100px 24px;
-  background: #ffffff;
+  background: var(--bg-primary);
   max-width: 1200px;
   margin: 0 auto;
+  transition: background-color 0.3s ease;
 }
 
 .comp-header {
@@ -13,7 +14,7 @@
 .comp-title {
   font-size: 3rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   margin-bottom: 16px;
   letter-spacing: -0.02em;
 }
@@ -24,29 +25,30 @@
 
 .comp-subtitle {
   font-size: 1.25rem;
-  color: #64748b;
+  color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
 }
 
 .comp-container {
-  background: white;
+  background: var(--card-bg);
   border-radius: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-primary);
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .comp-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .comp-header-row {
-  background: #f8fafc;
+  background: var(--bg-secondary);
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -56,7 +58,7 @@
   padding: 24px 32px;
   display: flex;
   align-items: center;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--border-primary);
 }
 
 .comp-cell:last-child {
@@ -64,19 +66,19 @@
 }
 
 .feature-cell {
-  background: #f8fafc;
+  background: var(--bg-secondary);
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .inua-cell {
-  background: #fffaf5;
+  background: var(--bg-secondary);
   color: #F07B20;
   font-weight: 700;
 }
 
 .trad-cell {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .comp-grid:last-child {
@@ -91,7 +93,7 @@
 
 .comp-cta-text {
   font-size: 1.125rem;
-  color: #0f172a;
+  color: var(--text-primary);
   font-weight: 600;
   margin-bottom: 24px;
 }

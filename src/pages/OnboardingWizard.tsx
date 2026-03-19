@@ -113,31 +113,31 @@ const OnboardingWizard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
         
         {/* Header & Progress Bar */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Let's set up your workspace</h2>
-          <p className="mt-2 text-sm text-slate-500">We need a few details to generate your AI business health score.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Let's set up your workspace</h2>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">We need a few details to generate your AI business health score.</p>
         </div>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-between relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 rounded-full z-0"></div>
+        <div className="mb-8 p-4">
+          <div className="flex items-center justify-between relative max-w-xl mx-auto">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[var(--border-primary)] rounded-full z-0"></div>
             <div 
               className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-orange-500 rounded-full z-0 transition-all duration-500"
               style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
             ></div>
             
             {steps.map((step) => (
-              <div key={step.id} className="relative z-10 flex flex-col items-center gap-2 bg-slate-50 px-2">
+              <div key={step.id} className="relative z-10 flex flex-col items-center gap-2 bg-[var(--bg-primary)] px-2 transition-colors duration-300">
                 <div className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors duration-300 ${
-                  currentStep >= step.id ? 'border-orange-500 bg-orange-500 text-white shadow-sm' : 'border-slate-300 bg-white text-slate-400'
+                  currentStep >= step.id ? 'border-orange-500 bg-orange-500 text-white shadow-sm' : 'border-[var(--border-primary)] bg-[var(--card-bg)] text-[var(--text-secondary)] opacity-40'
                 }`}>
                   {currentStep > step.id ? <CheckCircle2 className="h-6 w-6" /> : <step.icon className="h-5 w-5" />}
                 </div>
-                <span className={`text-xs font-medium ${currentStep >= step.id ? 'text-orange-600' : 'text-slate-500'}`}>
+                <span className={`text-[10px] uppercase font-bold tracking-widest ${currentStep >= step.id ? 'text-orange-500' : 'text-[var(--text-secondary)] opacity-40'}`}>
                   {step.name}
                 </span>
               </div>
@@ -146,7 +146,7 @@ const OnboardingWizard: React.FC = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-slate-200 flex flex-col overflow-hidden">
+        <div className="bg-[var(--card-bg)] py-10 px-6 sm:px-12 shadow-xl sm:rounded-2xl border border-[var(--border-primary)] flex flex-col overflow-hidden transition-all duration-300">
           
           <div className="flex-1 relative">
             <div 
@@ -156,11 +156,11 @@ const OnboardingWizard: React.FC = () => {
               {/* STEP 1: Business Profile */}
               <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 1 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="space-y-6">
-                <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Business Profile</h3>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] border-b border-[var(--border-primary)] pb-5 pt-2">Step 1: Business Identity</h3>
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Industry Sector</label>
-                    <select name="sector" value={formData.sector} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6 bg-white">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Industry Sector</label>
+                    <select name="sector" value={formData.sector} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 pl-4 pr-10 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors appearance-none">
                       <option value="retail">Retail</option>
                       <option value="manufacturing">Manufacturing</option>
                       <option value="services">Services</option>
@@ -168,20 +168,20 @@ const OnboardingWizard: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Business Stage</label>
-                    <select name="business_stage" value={formData.business_stage} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6 bg-white">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Business Stage</label>
+                    <select name="business_stage" value={formData.business_stage} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 pl-4 pr-10 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors appearance-none">
                       <option value="startup">Startup (0-2 years)</option>
                       <option value="growth">Growth (2-5 years)</option>
                       <option value="mature">Mature (5+ years)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Age of Business (Years)</label>
-                    <input type="number" name="age_of_business" min="0" value={formData.age_of_business} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Age of Business (Years)</label>
+                    <input type="number" name="age_of_business" min="0" value={formData.age_of_business} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 px-4 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors" placeholder="e.g. 3" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Total Employees</label>
-                    <input type="number" name="employee_count" min="1" value={formData.employee_count} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Total Employees</label>
+                    <input type="number" name="employee_count" min="1" value={formData.employee_count} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 px-4 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors" placeholder="e.g. 5" />
                   </div>
                 </div>
               </div>
@@ -190,20 +190,20 @@ const OnboardingWizard: React.FC = () => {
               {/* STEP 2: Financial Snapshot */}
               <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 2 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="space-y-6">
-                <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Financial Snapshot</h3>
-                <p className="text-sm text-slate-500 mb-4">Provide rough estimates. These will be used to generate your initial funding readiness score.</p>
+                <h3 className="text-xl font-bold text-[var(--text-primary)] border-b border-[var(--border-primary)] pb-5 pt-2">Step 2: Financial Overview</h3>
+                <p className="text-sm text-[var(--text-secondary)] opacity-70 mb-6 italic">Provide estimates to calculate your starting funding score.</p>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Annual Revenue (KSh)</label>
-                    <input type="number" name="revenue" value={formData.revenue} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Annual Revenue (KSh)</label>
+                    <input type="number" name="revenue" value={formData.revenue} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 px-4 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Profit Margin (%)</label>
-                    <input type="number" name="profit_margin" value={formData.profit_margin} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Profit Margin (%)</label>
+                    <input type="number" name="profit_margin" value={formData.profit_margin} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 px-4 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium leading-6 text-slate-900">Current Bank Balance (KSh)</label>
-                    <input type="number" name="bank_balance" value={formData.bank_balance} onChange={handleChange} className="mt-2 block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6" />
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] opacity-60 mb-2 ml-1">Current Bank Balance (KSh)</label>
+                    <input type="number" name="bank_balance" value={formData.bank_balance} onChange={handleChange} className="block w-full rounded-xl border border-[var(--border-primary)] py-3 px-4 text-[var(--text-primary)] focus:ring-2 focus:ring-orange-500 sm:text-sm bg-[var(--bg-secondary)] transition-colors" />
                   </div>
                 </div>
               </div>
@@ -212,24 +212,24 @@ const OnboardingWizard: React.FC = () => {
               {/* STEP 3: Compliance & Docs */}
               <div className={`w-full shrink-0 px-1 transition-opacity duration-500 ${currentStep === 3 ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="space-y-6">
-                <h3 className="text-lg font-medium leading-6 text-slate-900 border-b border-slate-100 pb-4">Compliance Status</h3>
-                <div className="space-y-4">
-                  <div className="relative flex items-start">
+                <h3 className="text-xl font-bold text-[var(--text-primary)] border-b border-[var(--border-primary)] pb-5 pt-2">Step 3: Compliance Checks</h3>
+                <div className="space-y-6">
+                  <div className="relative flex items-start group">
                     <div className="flex h-6 items-center">
-                      <input id="tax" name="tax_registered" type="checkbox" checked={formData.tax_registered} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600" />
+                      <input id="tax" name="tax_registered" type="checkbox" checked={formData.tax_registered} onChange={handleChange} className="h-5 w-5 rounded-lg border-[var(--border-primary)] text-orange-600 focus:ring-orange-500 bg-[var(--bg-secondary)]" />
                     </div>
-                    <div className="ml-3 text-sm leading-6">
-                      <label htmlFor="tax" className="font-medium text-slate-900">KRA PIN Registered</label>
-                      <p className="text-slate-500">The business has a valid KRA PIN and is registered for taxes.</p>
+                    <div className="ml-4 text-sm leading-6">
+                      <label htmlFor="tax" className="font-bold text-[var(--text-primary)]">KRA PIN Registered</label>
+                      <p className="text-[var(--text-secondary)] opacity-60">Your business has a valid KRA PIN and is registered for taxes.</p>
                     </div>
                   </div>
-                  <div className="relative flex items-start">
+                  <div className="relative flex items-start group">
                     <div className="flex h-6 items-center">
-                      <input id="licenses" name="licenses_up_to_date" type="checkbox" checked={formData.licenses_up_to_date} onChange={handleChange} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600" />
+                      <input id="licenses" name="licenses_up_to_date" type="checkbox" checked={formData.licenses_up_to_date} onChange={handleChange} className="h-5 w-5 rounded-lg border-[var(--border-primary)] text-orange-600 focus:ring-orange-500 bg-[var(--bg-secondary)]" />
                     </div>
-                    <div className="ml-3 text-sm leading-6">
-                      <label htmlFor="licenses" className="font-medium text-slate-900">Operating Licenses Up to Date</label>
-                      <p className="text-slate-500">All required county and national operating licenses are current.</p>
+                    <div className="ml-4 text-sm leading-6">
+                      <label htmlFor="licenses" className="font-bold text-[var(--text-primary)]">Operating Licenses Up to Date</label>
+                      <p className="text-[var(--text-secondary)] opacity-60">All required county and national operating licenses are current.</p>
                     </div>
                   </div>
                 </div>
@@ -239,9 +239,9 @@ const OnboardingWizard: React.FC = () => {
           </div>
 
           {/* Navigation Footer */}
-          <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-6">
+          <div className="mt-10 flex flex-col gap-6 border-t border-[var(--border-primary)] pt-8">
             {error && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 font-medium text-center border border-red-100">
+              <div className="rounded-xl bg-red-50 dark:bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-400 font-bold text-center border border-red-100 dark:border-red-500/20">
                 {error}
               </div>
             )}
@@ -250,8 +250,8 @@ const OnboardingWizard: React.FC = () => {
                 type="button"
                 onClick={handleBack}
                 disabled={currentStep === 1 || isSubmitting}
-                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
-                  currentStep === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-100'
+                className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${
+                  currentStep === 1 ? 'text-[var(--text-secondary)] opacity-20 cursor-not-allowed' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
                 }`}
               >
                 <ArrowLeft className="h-4 w-4" /> Back
@@ -260,9 +260,9 @@ const OnboardingWizard: React.FC = () => {
                 type="button"
                 onClick={handleNext}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 rounded-md bg-orange-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-xl bg-orange-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               >
-                {isSubmitting ? 'Processing...' : currentStep === steps.length ? 'Complete Setup' : 'Next Step'} 
+                {isSubmitting ? 'Processing...' : currentStep === steps.length ? 'Complete Setup' : 'Continue'} 
                 {!isSubmitting && currentStep < steps.length && <ArrowRight className="h-4 w-4" />}
               </button>
             </div>

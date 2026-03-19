@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { authAPI } from '../services/api';
 import './Auth.css';
 
 const Register: React.FC = () => {
@@ -11,14 +12,31 @@ const Register: React.FC = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Registering with:', { email, password });
-    navigate('/onboarding');
+    try {
+      await authAPI.register({ 
+        username: email, 
+        email: email,
+        password: password 
+      });
+      // After registration, log them in automatically
+      const response = await authAPI.login({ username: email, password });
+      localStorage.setItem('auth_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      navigate('/onboarding');
+    } catch (error) {
+      console.error('Registration failed:', error);
+      alert('Registration failed. Username might already be taken.');
+    }
   };
 
   return (

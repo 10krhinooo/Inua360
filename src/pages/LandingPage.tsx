@@ -9,16 +9,30 @@ import FinalCTA from '../components/Landing/FinalCTA';
 import ScrollToTop from '../components/Landing/ScrollToTop';
 import Footer from '../components/Landing/Footer';
 import LogoMarquee from '../components/Landing/LogoMarquee';
+import SMEFeatures from '../components/Landing/SMEFeatures';
+import LenderFeatures from '../components/Landing/LenderFeatures';
+import HowItWorks from '../components/Landing/HowItWorks';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] transition-colors duration-300">
       <Navbar persona="SME" />
       <main>
         <Hero />
         <LogoMarquee />
         <Features />
-        <Comparison />
+        
+        {/* Screenshot 1: For Small Businesses */}
+        <SMEFeatures />
+        
+        <Comparison /> {/* "The Inua360 Advantage" */}
+
+        {/* Screenshot 3: How It Works */}
+        <HowItWorks />
+        
+        {/* Screenshot 2: For Lenders */}
+        <LenderFeatures />
+
         <WaitlistSection persona="SME" />
         <FAQSection persona="SME" />
         <FinalCTA persona="SME" />

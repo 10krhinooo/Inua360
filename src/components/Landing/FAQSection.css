@@ -1,8 +1,9 @@
 .faq-section {
   padding: 100px 24px;
-  background: #0f172a;
-  color: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   text-align: center;
+  transition: all 0.3s ease;
 }
 
 .faq-title {
@@ -18,7 +19,7 @@
 }
 
 .faq-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-primary);
   padding: 24px 0;
 }
 
@@ -39,7 +40,7 @@
 .faq-answer {
   margin-top: 16px;
   font-size: 1rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   line-height: 1.6;
   max-height: 0;
   overflow: hidden;
@@ -59,7 +60,7 @@
 
 .faq-item.active .faq-icon {
   transform: rotate(45deg);
-  color: white;
+  color: #F07B20;
 }
 
 .faq-categories {
@@ -80,8 +81,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
 }
 
 .faq-cat-pill:hover {

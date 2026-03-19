@@ -15,7 +15,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const token = localStorage.getItem('firebase_token');
+      const token = localStorage.getItem('auth_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -30,13 +30,19 @@ apiClient.interceptors.request.use(
 );
 
 export interface AlertPreferences {
-  email_notifications: boolean;
+  email_notifications?: boolean;
   categories: {
     sales: boolean;
     inventory: boolean;
     expenses: boolean;
     compliance: boolean;
     system: boolean;
+  };
+  channels?: {
+    whatsapp: boolean;
+    webapp: boolean;
+    ussd: boolean;
+    sms: boolean;
   };
 }
 

@@ -9,7 +9,7 @@ const Hero: React.FC = () => {
         <div className="hero-content">
           <div className="hero-tagstrip">
             <span className="hero-tag-pill">
-              <Activity size={14} className="text-[#2E9B4E]" />
+              <Activity size={14} className="text-green-600 dark:text-green-400" />
               Kenya's #1 SME Health Platform
             </span>
           </div>

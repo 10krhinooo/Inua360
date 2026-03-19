@@ -35,8 +35,8 @@ const FinalCTA: React.FC<FinalCTAProps> = ({ persona }) => {
             </h2>
 
             <div style={{ marginBottom: '40px' }}>
-                <a href="#join-waitlist" className="btn-final">
-                    Get started for free <ArrowRight size={24} />
+                <a href={persona === 'Lender' ? "#" : "#register"} className="btn-final">
+                    {persona === 'Lender' ? "Partner with us" : "Get started for free"} <ArrowRight size={24} />
                 </a>
             </div>
 

@@ -1,10 +1,11 @@
 .waitlist-section {
   padding: 120px 24px;
-  background: #ffffff;
+  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: background-color 0.3s ease;
 }
 
 .waitlist-eyebrow {
@@ -19,9 +20,10 @@
 .waitlist-title {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   margin-bottom: 24px;
   letter-spacing: -0.03em;
+  transition: color 0.3s ease;
 }
 
 .waitlist-title span {
@@ -33,24 +35,26 @@
 
 .waitlist-subtitle {
   font-size: 1.25rem;
-  color: #475569;
+  color: var(--text-secondary);
   max-width: 650px;
   margin-bottom: 56px;
   line-height: 1.6;
+  transition: color 0.3s ease;
 }
 
 .waitlist-form {
   width: 100%;
   max-width: 1000px;
-  background: #f8fafc;
+  background: var(--card-bg);
   padding: 48px;
   border-radius: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-primary);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
   text-align: left;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .form-full {
@@ -77,7 +81,7 @@
 .form-group label {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -86,11 +90,11 @@
   width: 100%;
   padding: 16px 20px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: white;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .form-input:focus, .form-select:focus {
@@ -131,12 +135,12 @@
 
 .btn-share {
   flex: 1;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   padding: 18px;
   border-radius: 12px;
   font-weight: 700;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border-primary);
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -160,7 +164,7 @@
 .waitlist-privacy {
   margin-top: 8px;
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--text-secondary);
   text-align: center;
   grid-column: span 2;
 }

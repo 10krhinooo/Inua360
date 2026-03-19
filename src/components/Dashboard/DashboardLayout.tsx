@@ -12,7 +12,7 @@ const DashboardLayout = () => {
 
   return (
     <ToastProvider>
-      <div className="flex h-screen overflow-hidden bg-slate-50 font-['Poppins']">
+      <div className="flex h-screen overflow-hidden bg-[var(--bg-secondary)] text-[var(--text-primary)] font-['Poppins']">
         <Sidebar 
           isOpen={sidebarOpen} 
           setIsOpen={setSidebarOpen} 

@@ -1,8 +1,9 @@
 .features-section {
   padding: 120px 24px;
-  background: #ffffff;
+  background: var(--bg-primary);
   max-width: 1280px;
   margin: 0 auto;
+  transition: background-color 0.3s ease;
 }
 
 .features-header {
@@ -14,7 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -31,9 +32,10 @@
 .features-headline {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   margin-bottom: 24px;
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
 }
 
 .features-headline span {
@@ -42,9 +44,10 @@
 
 .features-subheadline {
   font-size: 1.25rem;
-  color: #64748b;
+  color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
+  transition: color 0.3s ease;
 }
 
 .features-cards {
@@ -55,13 +58,13 @@
 }
 
 .features-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 24px;
   padding: 40px;
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-primary);
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -92,14 +95,14 @@
 .features-card-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   line-height: 1.2;
   margin-bottom: 20px;
 }
 
 .features-card-desc {
   font-size: 1.05rem;
-  color: #475569;
+  color: var(--text-secondary);
   line-height: 1.6;
   flex-grow: 1;
 }
@@ -119,7 +122,7 @@
   gap: 12px;
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .features-check {
@@ -129,13 +132,13 @@
 .features-bottom-strip {
   text-align: center;
   padding-top: 60px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-primary);
 }
 
 .features-tagline {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 40px;
 }
 
@@ -169,14 +172,14 @@
 }
 
 .btn-s {
-  background: white;
-  color: #0f172a;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
 }
 
 .btn-s:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: var(--bg-secondary);
+  border-color: #F07B20;
 }
 
 .features-logo-wrap {

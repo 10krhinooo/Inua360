@@ -12,31 +12,43 @@ import OnboardingWizard from './pages/OnboardingWizard';
 
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
+import { useEffect } from 'react';
+
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
+  useEffect(() => {
+    // Basic session check - if token exists, we're "logged in"
+    // In a full implementation, we'd verify the token with the backend
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      console.log('Session restored');
+    }
+  }, []);
+
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/for-lenders" element={<LenderLandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/lenders" element={<LenderLandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/onboarding" element={<OnboardingWizard />} />
+          
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="health" element={<HealthReport />} />
+            <Route path="funding" element={<Funding />} />
+            <Route path="alerts" element={<Alerts />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
 
-        {/* Private/Protected Routes */}
-        <Route path="/onboarding" element={<OnboardingWizard />} />
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="health" element={<HealthReport />} />
-          <Route path="alerts" element={<Alerts />} />
-          <Route path="funding" element={<Funding />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

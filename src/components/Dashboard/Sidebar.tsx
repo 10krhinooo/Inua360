@@ -13,6 +13,8 @@ import {
   X
 } from 'lucide-react';
 
+import { useTheme } from '../../context/ThemeContext';
+
 interface SidebarProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -31,6 +33,7 @@ const navigation = [
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onToggle }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   return (
     <>
@@ -45,21 +48,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onTog
       {/* Sidebar */}
       <div 
         className={
-          `fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ` + 
+          `fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[var(--border-primary)] bg-[var(--card-bg)] transition-all duration-300 ease-in-out lg:static lg:translate-x-0 ` + 
           (isOpen ? "translate-x-0 shadow-2xl w-64" : "-translate-x-full lg:translate-x-0 ") +
           (isCollapsed && !isOpen ? "lg:w-20" : "lg:w-64")
         }
       >
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-5">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-[var(--border-primary)] px-5">
             <div className="flex items-center gap-2 overflow-hidden w-full transition-all">
                 <img 
-                  src="/logo.png" 
+                  src={theme === 'dark' ? "/logo-white.png" : "/logo.png"} 
                   alt="Inua360 Logo" 
                   onClick={() => { navigate('/'); setIsOpen(false); }} 
                   className={`h-10 w-auto min-w-[40px] cursor-pointer transition-all ${isCollapsed && !isOpen ? 'scale-110' : ''}`} 
+                  onError={(e) => {
+                    // Fallback if logo-white doesn't exist
+                    if (theme === 'dark') (e.target as HTMLImageElement).src = '/logo.png';
+                  }}
                 />
                 {(!isCollapsed || isOpen) && (
-                  <span className="text-xl font-bold tracking-tight text-[#0f172a] whitespace-nowrap">Inua360</span>
+                  <span className="text-xl font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap">Inua360</span>
                 )}
             </div>
             <button 
@@ -81,8 +88,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onTog
               className={({ isActive }) =>
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all group " + (
                   isActive
-                    ? "bg-orange-50 text-[#F07B20]"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#F07B20]"
+                    ? "bg-orange-50 dark:bg-orange-500/10 text-[#F07B20]"
+                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[#F07B20]"
                 )
               }
             >
@@ -92,16 +99,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onTog
           ))}
         </nav>
 
-        <div className="border-t border-slate-200 p-3 space-y-2 shrink-0">
+        <div className="border-t border-[var(--border-primary)] p-3 space-y-2 shrink-0">
           <button 
             onClick={onToggle}
-            className="hidden lg:flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 transition-colors"
+            className="hidden lg:flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] transition-colors"
           >
             {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             {!isCollapsed && <span>Collapse Sidebar</span>}
           </button>
           
-          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 transition-colors">
             <LogOut className="h-5 w-5 shrink-0" />
             {(!isCollapsed || isOpen) && <span>Sign out</span>}
           </button>

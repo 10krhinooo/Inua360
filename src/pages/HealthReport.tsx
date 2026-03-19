@@ -47,7 +47,7 @@ const HealthReport: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
         <Activity className="h-10 w-10 animate-pulse text-orange-500 mb-4" />
         <p>Loading your AI insights...</p>
       </div>
@@ -68,11 +68,11 @@ const HealthReport: React.FC = () => {
       
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
           <Activity className="h-6 w-6 text-orange-600" />
           Business Health Report
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
           AI-generated insights based on your latest financial and operational data.
         </p>
       </div>
@@ -80,8 +80,8 @@ const HealthReport: React.FC = () => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         
         {/* Left Column: The Big Score Card */}
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-lg font-semibold text-slate-900">Overall Health Score</h2>
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--border-primary)] bg-[var(--card-bg)] p-8 shadow-sm transition-colors duration-300">
+          <h2 className="mb-6 text-lg font-semibold text-[var(--text-primary)]">Overall Health Score</h2>
           
           {/* Circular SVG Gauge */}
           <div className="relative h-48 w-48">
@@ -108,32 +108,32 @@ const HealthReport: React.FC = () => {
             
             {/* Center Text */}
             <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-              <span className="text-5xl font-extrabold text-slate-900">{reportData.score}</span>
-              <span className="mt-1 rounded-full bg-green-100 px-3 py-0.5 text-xs font-bold tracking-wide text-green-700">
+              <span className="text-5xl font-extrabold text-[var(--text-primary)]">{reportData.score}</span>
+              <span className="mt-1 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-0.5 text-xs font-bold tracking-wide text-green-700 dark:text-green-400">
                 {reportData.status}
               </span>
             </div>
           </div>
 
-          <div className="mt-8 flex w-full justify-around text-sm text-slate-600 border-t border-slate-100 pt-6">
+          <div className="mt-8 flex w-full justify-around text-sm text-[var(--text-secondary)] border-t border-[var(--border-primary)] pt-6">
             <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-green-500" /> Full Report</span>
             <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-green-500" /> Clear Insights</span>
           </div>
         </div>
 
         {/* Right Column: Metric Bars */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-lg font-semibold text-slate-900">Performance Breakdown</h2>
+        <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--card-bg)] p-8 shadow-sm transition-colors duration-300">
+          <h2 className="mb-6 text-lg font-semibold text-[var(--text-primary)]">Performance Breakdown</h2>
           
           <div className="space-y-6">
             {reportData.metrics.map((metric: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
               <div key={metric.label}>
                 <div className="mb-2 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-700">{metric.label}</span>
-                  <span className="font-semibold text-slate-900">{metric.level}</span>
+                  <span className="font-medium text-[var(--text-secondary)]">{metric.label}</span>
+                  <span className="font-semibold text-[var(--text-primary)]">{metric.level}</span>
                 </div>
                 {/* The Progress Bar Container */}
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-[var(--bg-secondary)]">
                   {/* The Colored Progress Fill */}
                   <div
                     className={`h-full rounded-full ${metric.color} transition-all duration-1000 ease-out`}
@@ -147,22 +147,22 @@ const HealthReport: React.FC = () => {
       </div>
 
       {/* Bottom Section: AI Insights */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h2 className="text-lg font-semibold text-slate-900">AI Risk & Opportunity Analysis</h2>
+      <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--card-bg)] shadow-sm overflow-hidden transition-colors duration-300">
+        <div className="border-b border-[var(--border-primary)] bg-[var(--bg-secondary)] px-6 py-4">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">AI Risk & Opportunity Analysis</h2>
         </div>
         <div className="divide-y divide-slate-100">
           {reportData.insights.length > 0 ? (
             reportData.insights.map((insight: any, idx: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
-              <div key={idx} className="flex items-start gap-4 p-6 hover:bg-slate-50 transition-colors">
+              <div key={idx} className="flex items-start gap-4 p-6 hover:bg-[var(--bg-secondary)] transition-colors">
                 <div className={`mt-1 rounded-full p-2 ${
-                  insight.type === 'positive' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
+                  insight.type === 'positive' ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400' : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400'
                 }`}>
                   <insight.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900">{insight.title}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{insight.desc}</p>
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">{insight.title}</h3>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">{insight.desc}</p>
                 </div>
               </div>
             ))

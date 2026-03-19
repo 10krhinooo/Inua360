@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Sun, Moon, Globe, 
   Smartphone, Share2, 
@@ -8,10 +8,16 @@ import {
   RefreshCw, CheckCircle2,
   Plus
 } from 'lucide-react';
+import { analyticsAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+
+import { useTheme } from '../context/ThemeContext';
 
 const SettingsPage = () => {
+  const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const [profileId, setProfileId] = useState<number | null>(null);
   const [language, setLanguage] = useState<'English' | 'Swahili'>('English');
-  const [darkMode, setDarkMode] = useState(false);
   const [quickLog, setQuickLog] = useState(true);
 
   const [channels, setChannels] = useState({
@@ -28,10 +34,51 @@ const SettingsPage = () => {
     cashflow: false
   });
 
+  // Fetch settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await analyticsAPI.getProfile();
+        if (response.data && response.data.length > 0) {
+          const profile = response.data[0];
+          setProfileId(profile.id);
+          if (profile.alert_preferences) {
+            setNotifications(prev => ({ ...prev, ...profile.alert_preferences.categories }));
+            setChannels(prev => ({ ...prev, ...profile.alert_preferences.channels }));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // Save settings helper
+  const saveSettings = async (newNotifications: any, newChannels: any) => {
+    if (!profileId) return;
+    try {
+      await analyticsAPI.updateProfile(profileId, {
+        alert_preferences: {
+          categories: newNotifications,
+          channels: newChannels
+        }
+      });
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    navigate('/login');
+  };
+
   const Toggle = ({ active, onToggle }: { active: boolean; onToggle: () => void }) => (
     <button 
       onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${active ? 'bg-[#F07B20]' : 'bg-slate-200'}`}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${active ? 'bg-[#F07B20]' : 'bg-[var(--border-primary)] opacity-40'}`}
     >
       <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${active ? 'translate-x-5' : 'translate-x-0'}`} />
     </button>
@@ -39,124 +86,126 @@ const SettingsPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 px-1">Settings</h1>
-        <p className="text-slate-500 font-medium px-1">Control your app and agents</p>
+      <div className="pt-2">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] px-1">Settings</h1>
+        <p className="text-[var(--text-secondary)] font-medium px-1 opacity-70">Control your app and agents</p>
       </div>
 
       {/* Appearance Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-50 rounded-lg">
-              <Sun className="h-5 w-5 text-[#F07B20]" />
+      <div className="bg-[var(--card-bg)] rounded-3xl border border-[var(--border-primary)] shadow-sm overflow-hidden transition-all duration-300">
+        <div className="p-8 space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-2xl">
+              <Sun className="h-6 w-6 text-[#F07B20]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Appearance</h2>
-              <p className="text-sm text-slate-500 font-medium">Customize how the app looks</p>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Appearance</h2>
+              <p className="text-sm text-[var(--text-secondary)] font-medium opacity-60">Customize how the app looks</p>
             </div>
           </div>
 
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Globe className="h-4 w-4 text-slate-400" />
-                <span className="text-sm font-bold text-slate-700">Language</span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider ml-2">Choose your language</span>
+          <div className="space-y-6 pt-2">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
+              <div className="flex items-center gap-4">
+                <Globe className="h-5 w-5 text-[var(--text-secondary)] opacity-40" />
+                <div className="flex flex-col">
+                    <span className="text-sm font-bold text-[var(--text-primary)]">Language</span>
+                    <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-wider">Choose your language</span>
+                </div>
               </div>
-              <div className="flex bg-slate-100 p-1 rounded-xl">
+              <div className="flex bg-[var(--bg-primary)] p-1.5 rounded-xl border border-[var(--border-primary)]">
                 <button 
                   onClick={() => setLanguage('English')}
-                  className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${language === 'English' ? 'bg-[#F07B20] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-6 py-2 text-xs font-bold rounded-lg transition-all ${language === 'English' ? 'bg-[#F07B20] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 >
                   English
                 </button>
                 <button 
                   onClick={() => setLanguage('Swahili')}
-                  className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${language === 'Swahili' ? 'bg-[#F07B20] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-6 py-2 text-xs font-bold rounded-lg transition-all ${language === 'Swahili' ? 'bg-[#F07B20] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                 >
                   Swahili
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Moon className="h-4 w-4 text-slate-400" />
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
+              <div className="flex items-center gap-4">
+                <Moon className="h-5 w-5 text-[var(--text-secondary)] opacity-40" />
                 <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-700">Dark Mode</span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Switch to dark appearance</span>
+                    <span className="text-sm font-bold text-[var(--text-primary)]">Dark Mode</span>
+                    <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-wider">Switch to dark appearance</span>
                 </div>
               </div>
-              <Toggle active={darkMode} onToggle={() => setDarkMode(!darkMode)} />
+              <Toggle active={theme === 'dark'} onToggle={toggleTheme} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Connected Accounts Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-cyan-50 rounded-lg">
-              <Share2 className="h-5 w-5 text-cyan-500" />
+      <div className="bg-[var(--card-bg)] rounded-3xl border border-[var(--border-primary)] shadow-sm overflow-hidden transition-all duration-300">
+        <div className="p-8 space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-cyan-50 dark:bg-cyan-500/10 rounded-2xl">
+              <Share2 className="h-6 w-6 text-cyan-500" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Connected Accounts</h2>
-              <p className="text-sm text-slate-500 font-medium">Manage your financial connections</p>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Connected Accounts</h2>
+              <p className="text-sm text-[var(--text-secondary)] font-medium opacity-60">Manage your financial connections</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-cyan-50/30 border border-cyan-100">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center border border-cyan-100 shadow-sm">
-                    <Smartphone className="h-5 w-5 text-cyan-500" />
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-cyan-50/30 dark:bg-cyan-500/5 border border-cyan-100 dark:border-cyan-500/20">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-5">
+                  <div className="h-14 w-14 bg-[var(--card-bg)] rounded-2xl flex items-center justify-center border border-cyan-100 dark:border-cyan-500/20 shadow-sm">
+                    <Smartphone className="h-7 w-7 text-cyan-500" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">M-Pesa</span>
-                        <span className="inline-flex items-center gap-1 bg-cyan-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                            <CheckCircle2 size={10} /> Connected
+                    <div className="flex items-center gap-3">
+                        <span className="text-lg font-bold text-[var(--text-primary)]">M-Pesa</span>
+                        <span className="inline-flex items-center gap-1.5 bg-cyan-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-cyan-500/20">
+                            <CheckCircle2 size={12} /> Connected
                         </span>
                     </div>
-                    <p className="text-[10px] font-bold text-slate-500">Till 403321 - Personal 07xxxxxxxx</p>
-                    <p className="text-[10px] font-medium text-slate-400 flex items-center gap-1 mt-0.5">
-                        <RefreshCw size={10} className="animate-spin-slow" /> Last sync 2 mins ago
+                    <p className="text-xs font-bold text-[var(--text-secondary)] opacity-60 mt-1">Till 403321 - Personal 07xxxxxxxx</p>
+                    <p className="text-[10px] font-bold text-[#F07B20] uppercase tracking-widest flex items-center gap-2 mt-1.5">
+                        <RefreshCw size={12} className="animate-spin-slow" /> Live Syncing
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button className="flex-1 bg-white border border-slate-200 text-slate-700 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm">
-                  Sync Now
+              <div className="flex gap-3">
+                <button className="flex-1 bg-[var(--card-bg)] border border-[var(--border-primary)] text-[var(--text-primary)] py-3 rounded-2xl text-xs font-bold hover:bg-[var(--bg-secondary)] transition-all shadow-sm">
+                  Manual Sync
                 </button>
-                <button className="px-6 bg-red-500 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-red-600 transition-colors shadow-sm">
-                  Revoke
+                <button className="px-8 bg-red-500 text-white py-3 rounded-2xl text-xs font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20">
+                  Disconnect
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-2xl border border-dashed border-slate-200">
-              <div className="flex items-center gap-4 text-slate-400">
-                <div className="h-10 w-10 flex items-center justify-center border border-slate-100 rounded-xl">
-                    <Wallet size={20} />
+            <div className="flex items-center justify-between p-6 rounded-3xl border-2 border-dashed border-[var(--border-primary)] opacity-60 hover:opacity-100 transition-all cursor-pointer group">
+              <div className="flex items-center gap-5 text-[var(--text-secondary)]">
+                <div className="h-14 w-14 flex items-center justify-center border border-[var(--border-primary)] rounded-2xl bg-[var(--bg-secondary)]">
+                    <Wallet size={24} className="opacity-40" />
                 </div>
                 <div>
-                    <p className="font-bold text-slate-500">Equity Bank</p>
-                    <p className="text-[10px] font-medium">Optional - for future plans</p>
+                    <p className="text-lg font-bold">Equity Bank</p>
+                    <p className="text-xs font-bold opacity-40 uppercase tracking-widest">Connect for business data</p>
                 </div>
               </div>
-              <button className="bg-white border border-slate-200 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors flex items-center gap-1">
-                <Plus size={14} /> Connect
+              <button className="bg-[var(--card-bg)] border border-[var(--border-primary)] text-[var(--text-primary)] px-6 py-2.5 rounded-2xl text-xs font-bold hover:bg-[var(--bg-secondary)] transition-all flex items-center gap-2 shadow-sm">
+                <Plus size={16} /> Connect Account
               </button>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between p-4 px-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-slate-700">Quick Log</span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ask me to log cash sales daily</span>
+                <span className="text-sm font-bold text-[var(--text-primary)]">Daily Cash Logs</span>
+                <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-widest">Ask me to log cash sales via WhatsApp</span>
               </div>
               <Toggle active={quickLog} onToggle={() => setQuickLog(!quickLog)} />
             </div>
@@ -196,7 +245,11 @@ const SettingsPage = () => {
                     </div>
                     <Toggle 
                         active={channels[channel.id as keyof typeof channels]} 
-                        onToggle={() => setChannels({...channels, [channel.id]: !channels[channel.id as keyof typeof channels]})} 
+                        onToggle={() => {
+                            const newChannels = {...channels, [channel.id]: !channels[channel.id as keyof typeof channels]};
+                            setChannels(newChannels);
+                            saveSettings(notifications, newChannels);
+                        }} 
                     />
                 </div>
             ))}
@@ -205,33 +258,37 @@ const SettingsPage = () => {
       </div>
 
       {/* Notifications Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-50 rounded-lg">
-              <Bell className="h-5 w-5 text-red-500" />
+      <div className="bg-[var(--card-bg)] rounded-3xl border border-[var(--border-primary)] shadow-sm overflow-hidden transition-all duration-300">
+        <div className="p-8 space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-red-50 dark:bg-red-500/10 rounded-2xl">
+              <Bell className="h-6 w-6 text-red-500" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Notifications</h2>
-              <p className="text-sm text-slate-500 font-medium">Control what notifications you receive</p>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Smart Alerts</h2>
+              <p className="text-sm text-[var(--text-secondary)] font-medium opacity-60">Control what notifications our agents send</p>
             </div>
           </div>
 
-          <div className="space-y-5 pt-2">
+          <div className="space-y-6 pt-2">
             {[
-                { id: 'actions', name: 'Agent Actions', desc: 'Get notified of all agent activities' },
-                { id: 'compliance', name: 'Compliance Alerts', desc: 'Licenses & permits expiring' },
-                { id: 'funding', name: 'Funding Opportunities', desc: 'New matches found' },
-                { id: 'cashflow', name: 'Cash Flow Warnings', desc: 'Predicted gaps ahead' }
+                { id: 'actions', name: 'Agent Activity', desc: 'Real-time updates on what our AI is doing' },
+                { id: 'compliance', name: 'Compliance Guards', desc: 'When licenses or documents need attention' },
+                { id: 'funding', name: 'Funding Matches', desc: 'New loan or grant opportunities discovered' },
+                { id: 'cashflow', name: 'Cashflow Radar', desc: 'AI-predicted gaps in your business balance' }
             ].map(notif => (
-                <div key={notif.id} className="flex items-center justify-between">
+                <div key={notif.id} className="flex items-center justify-between p-4 px-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)]">
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-700">{notif.name}</span>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{notif.desc}</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)]">{notif.name}</span>
+                        <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-widest">{notif.desc}</span>
                     </div>
                     <Toggle 
                         active={notifications[notif.id as keyof typeof notifications]} 
-                        onToggle={() => setNotifications({...notifications, [notif.id]: !notifications[notif.id as keyof typeof notifications]})} 
+                        onToggle={() => {
+                            const newNotifs = {...notifications, [notif.id]: !notifications[notif.id as keyof typeof notifications]};
+                            setNotifications(newNotifs);
+                            saveSettings(newNotifs, channels);
+                        }} 
                     />
                 </div>
             ))}
@@ -240,58 +297,61 @@ const SettingsPage = () => {
       </div>
 
       {/* Privacy & Data Section */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-50 rounded-lg">
-              <ShieldCheck className="h-5 w-5 text-[#F07B20]" />
+      <div className="bg-[var(--card-bg)] rounded-3xl border border-[var(--border-primary)] shadow-sm overflow-hidden transition-all duration-300">
+        <div className="p-8 space-y-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-2xl">
+              <ShieldCheck className="h-6 w-6 text-[#F07B20]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Privacy & Data</h2>
-              <p className="text-sm text-slate-500 font-medium">Your information is secure</p>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Data Governance</h2>
+              <p className="text-sm text-[var(--text-secondary)] font-medium opacity-60">Your business records are encrypted</p>
             </div>
           </div>
 
-          <div className="space-y-2 pt-2">
-            <button className="w-full flex items-center justify-between p-3 text-sm font-bold text-slate-700 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors group">
-              <span>Privacy Policy</span>
-              <Plus className="h-4 w-4 rotate-45 text-slate-400 group-hover:text-slate-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button className="flex items-center justify-between p-4 px-6 text-sm font-bold text-[var(--text-primary)] border border-[var(--border-primary)] rounded-2xl bg-[var(--bg-secondary)] hover:border-[#F07B20] transition-all group">
+              <span>Privacy Guardrails</span>
+              <Plus className="h-4 w-4 rotate-45 text-[var(--text-secondary)] opacity-40 group-hover:text-[#F07B20] transition-all" />
             </button>
-            <button className="w-full flex items-center justify-between p-3 text-sm font-bold text-slate-700 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors group">
-              <span>Kenya DPA Consent</span>
-              <Plus className="h-4 w-4 rotate-45 text-slate-400 group-hover:text-slate-600" />
+            <button className="flex items-center justify-between p-4 px-6 text-sm font-bold text-[var(--text-primary)] border border-[var(--border-primary)] rounded-2xl bg-[var(--bg-secondary)] hover:border-[#F07B20] transition-all group">
+              <span>GDPR/DPA Consent</span>
+              <Plus className="h-4 w-4 rotate-45 text-[var(--text-secondary)] opacity-40 group-hover:text-[#F07B20] transition-all" />
             </button>
-            <button className="w-full flex items-center justify-center gap-2 p-3 text-xs font-bold text-[#F07B20] uppercase tracking-wider bg-orange-50/50 rounded-xl hover:bg-orange-50 transition-colors mt-2">
-              <Download size={14} /> Download My Data
+            <button className="sm:col-span-2 flex items-center justify-center gap-3 p-4 text-xs font-bold text-white uppercase tracking-widest bg-[var(--text-primary)] rounded-2xl hover:opacity-90 transition-all mt-2 shadow-lg dark:shadow-none">
+              <Download size={16} /> Export Business Audit Trail
             </button>
           </div>
         </div>
       </div>
 
       {/* Add to Home Card */}
-      <div className="bg-orange-50/30 rounded-2xl border border-orange-100 p-6 space-y-6">
-        <div className="flex items-center gap-4">
-            <div className="p-3 bg-white rounded-2xl shadow-sm">
-                <Download className="h-6 w-6 text-[#F07B20]" />
+      <div className="bg-orange-50/10 dark:bg-orange-500/5 rounded-3xl border-2 border-orange-100/50 dark:border-orange-500/10 p-8 space-y-6 transition-all duration-300">
+        <div className="flex items-center gap-5">
+            <div className="p-4 bg-[var(--card-bg)] rounded-3xl shadow-sm border border-orange-100/50 dark:border-orange-500/10">
+                <Download className="h-7 w-7 text-[#F07B20]" />
             </div>
             <div>
-                <h2 className="text-lg font-bold text-slate-900">Add to Home Screen</h2>
-                <p className="text-sm text-slate-500 font-medium">Use Inua like a native app</p>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">Inua Mobile</h2>
+                <p className="text-sm text-[var(--text-secondary)] font-medium opacity-60">Install our PWA for daily agent logs</p>
             </div>
         </div>
-        <button className="w-full bg-[#F07B20] text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-orange-200 hover:bg-[#d86a1a] transition-all flex items-center justify-center gap-2">
-            <Download size={18} /> Install App
+        <button className="w-full bg-[#F07B20] text-white py-5 rounded-3xl font-bold text-sm uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:bg-orange-700 transition-all flex items-center justify-center gap-3 active:scale-95">
+            <Download size={20} /> Install Application
         </button>
       </div>
 
       {/* Logout Footer */}
-      <div className="pt-8 flex flex-col items-center gap-6">
-        <div className="text-center">
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Inua 360 v1.0.0</p>
-            <p className="text-slate-400 text-[10px] font-bold mt-1">Made with love in Kenya 🇰🇪</p>
+      <div className="pt-12 flex flex-col items-center gap-8">
+        <div className="text-center opacity-40">
+            <p className="text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-[0.2em]">Inua 360 Ecosystem v1.0.0</p>
+            <p className="text-[var(--text-secondary)] text-[10px] font-bold mt-2">Nairobi, Kenya 🇰🇪</p>
         </div>
-        <button className="flex items-center gap-3 bg-red-500 text-white px-8 py-3.5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-red-100 hover:bg-red-600 transition-all">
-            <LogOut size={18} /> Log Out
+        <button 
+            onClick={handleLogout}
+            className="flex items-center gap-4 bg-red-500 text-white px-10 py-4 rounded-3xl font-bold text-xs uppercase tracking-[0.15em] shadow-xl shadow-red-500/20 hover:bg-red-600 transition-all active:scale-95"
+        >
+            <LogOut size={20} /> Terminate Session
         </button>
       </div>
     </div>

@@ -90,7 +90,7 @@ const Funding: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
+      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
         <Activity className="h-10 w-10 animate-pulse text-orange-600 mb-4" />
         <p>Analyzing lending eligibility...</p>
       </div>
@@ -114,11 +114,11 @@ const Funding: React.FC = () => {
       
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] flex items-center gap-2">
           <Landmark className="h-6 w-6 text-orange-600" />
           Funding Readiness & Loans
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
           Your AI-verified eligibility status and curated loan offers from our lending partners.
         </p>
       </div>
@@ -126,12 +126,12 @@ const Funding: React.FC = () => {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         
         {/* Left Column: Readiness Status */}
-        <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Readiness Status</h2>
+        <div className="flex flex-col rounded-2xl border border-[var(--border-primary)] bg-[var(--card-bg)] p-6 shadow-sm lg:col-span-1 transition-colors duration-300">
+          <h2 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wider mb-4">Readiness Status</h2>
           
-          <div className="flex flex-col items-center justify-center py-6 border-b border-slate-100">
-            <div className={`relative flex h-24 w-24 items-center justify-center rounded-full ${fundingData.isEligible ? 'bg-orange-50' : 'bg-slate-50'}`}>
-              <ShieldCheck className={`h-12 w-12 ${fundingData.isEligible ? 'text-orange-600' : 'text-slate-400'}`} />
+          <div className="flex flex-col items-center justify-center py-6 border-b border-[var(--border-primary)]">
+            <div className={`relative flex h-24 w-24 items-center justify-center rounded-full ${fundingData.isEligible ? 'bg-orange-50 dark:bg-orange-500/10' : 'bg-slate-50 dark:bg-slate-800'}`}>
+              <ShieldCheck className={`h-12 w-12 ${fundingData.isEligible ? 'text-orange-600' : 'text-[var(--text-secondary)] opacity-40'}`} />
               {fundingData.isEligible ? (
                 <div className="absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 border-4 border-white">
                   <CheckCircle2 className="h-4 w-4 text-white" />
@@ -142,11 +142,11 @@ const Funding: React.FC = () => {
                 </div>
               )}
             </div>
-            <h3 className="mt-4 text-2xl font-bold text-slate-900 text-center">
+            <h3 className="mt-4 text-2xl font-bold text-[var(--text-primary)] text-center">
               {fundingData.isEligible ? 'Ready for Funding' : 'Needs Improvement'}
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Default Risk: <span className={`font-semibold ${fundingData.defaultRisk === 'Low' ? 'text-green-600' : fundingData.defaultRisk === 'Medium' ? 'text-yellow-600' : 'text-red-600'}`}>{fundingData.defaultRisk}</span>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              Default Risk: <span className={`font-semibold ${fundingData.defaultRisk === 'Low' ? 'text-green-600 dark:text-green-400' : fundingData.defaultRisk === 'Medium' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}`}>{fundingData.defaultRisk}</span>
             </p>
           </div>
 
@@ -165,8 +165,8 @@ const Funding: React.FC = () => {
                     <XCircle className="h-5 w-5 text-red-500 shrink-0" />
                   )}
                   <div>
-                    <span className="block font-medium text-slate-700">{factor.name}</span>
-                    <span className="block text-xs text-slate-500">{factor.desc}</span>
+                    <span className="block font-medium text-[var(--text-primary)] opacity-80">{factor.name}</span>
+                    <span className="block text-xs text-[var(--text-secondary)]">{factor.desc}</span>
                   </div>
                 </li>
               ))}
@@ -178,7 +178,7 @@ const Funding: React.FC = () => {
         <div className="flex flex-col lg:col-span-2 space-y-6">
           
           {/* Top Banner indicating pre-approval amount */}
-          <div className={`rounded-2xl p-6 text-white shadow-md flex items-center justify-between ${fundingData.isEligible ? 'bg-linear-to-r from-orange-500 to-orange-600' : 'bg-slate-800'}`}>
+          <div className={`rounded-2xl p-6 text-white shadow-md flex items-center justify-between ${fundingData.isEligible ? 'bg-linear-to-r from-orange-500 to-orange-600' : 'bg-slate-800 dark:bg-black/40 border border-[var(--border-primary)]'}`}>
             <div>
               <p className={`${fundingData.isEligible ? 'text-orange-100' : 'text-slate-300'} text-sm font-medium mb-1`}>
                 Estimated Maximum Approval
@@ -193,10 +193,10 @@ const Funding: React.FC = () => {
           </div>
 
           {/* Lender Offers List */}
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex-1">
-            <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Matched Loan Offers</h2>
-              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${availableOffers.length > 0 ? 'bg-orange-100 text-orange-700' : 'bg-slate-200 text-slate-600'}`}>
+          <div className="rounded-2xl border border-[var(--border-primary)] bg-[var(--card-bg)] shadow-sm overflow-hidden flex-1 transition-colors duration-300">
+            <div className="border-b border-[var(--border-primary)] bg-[var(--bg-secondary)] px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">Matched Loan Offers</h2>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${availableOffers.length > 0 ? 'bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-400' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'}`}>
                 {availableOffers.length} Offers Available
               </span>
             </div>
@@ -204,32 +204,32 @@ const Funding: React.FC = () => {
             <div className="divide-y divide-slate-100">
               {availableOffers.length > 0 ? (
                 availableOffers.map((offer) => (
-                  <div key={offer.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 hover:bg-slate-50 transition-colors gap-4">
+                  <div key={offer.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 hover:bg-[var(--bg-secondary)] transition-colors gap-4">
                     
                     {/* Lender Info */}
                     <div className="flex items-center gap-4">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${offer.logo}`}>
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${offer.logo} dark:opacity-80`}>
                         <Building className="h-6 w-6" />
                       </div>
                       <div>
-                        <h3 className="text-base font-bold text-slate-900">{offer.lender}</h3>
-                        <p className="text-sm font-medium text-slate-500">{offer.type}</p>
+                        <h3 className="text-base font-bold text-[var(--text-primary)]">{offer.lender}</h3>
+                        <p className="text-sm font-medium text-[var(--text-secondary)] opacity-70">{offer.type}</p>
                       </div>
                     </div>
 
                     {/* Loan Terms */}
                     <div className="flex flex-wrap sm:flex-nowrap gap-6 sm:gap-8">
                       <div className="flex flex-col">
-                        <span className="text-xs text-slate-500 uppercase tracking-wide">Amount</span>
-                        <span className="text-sm font-bold text-slate-900">{offer.amount}</span>
+                        <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wide">Amount</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)]">{offer.amount}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs text-slate-500 uppercase tracking-wide">Rate</span>
-                        <span className="text-sm font-bold text-slate-900">{offer.rate}</span>
+                        <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wide">Rate</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)]">{offer.rate}</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs text-slate-500 uppercase tracking-wide">Term</span>
-                        <span className="text-sm font-bold text-slate-900">{offer.term}</span>
+                        <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wide">Term</span>
+                        <span className="text-sm font-bold text-[var(--text-primary)]">{offer.term}</span>
                       </div>
                     </div>
 

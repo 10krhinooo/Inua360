@@ -18,10 +18,10 @@ const LenderComparison: React.FC = () => {
 
       <div className="comp-container">
         {/* Header Row */}
-        <div className="comp-grid comp-header-row" style={{ backgroundColor: '#f1f5f9' }}>
+        <div className="comp-grid comp-header-row">
           <div className="comp-cell">Intelligence Layer</div>
           <div className="comp-cell">Traditional Banking</div>
-          <div className="comp-cell" style={{ backgroundColor: '#eff6ff', color: '#2563eb', justifyContent: 'center' }}>Inua360 Partner Portal</div>
+          <div className="comp-cell inua-cell" style={{ justifyContent: 'center' }}>Inua360 Partner Portal</div>
         </div>
 
         {/* Data Rows */}
@@ -29,14 +29,14 @@ const LenderComparison: React.FC = () => {
           <div className="comp-grid" key={idx}>
             <div className="comp-cell feature-cell">{row.item}</div>
             <div className="comp-cell trad-cell">{row.trad}</div>
-            <div className="comp-cell" style={{ background: '#fffaf5', color: '#2563eb', fontWeight: 'bold', justifyContent: 'center' }}>{row.inua}</div>
+            <div className="comp-cell inua-cell" style={{ fontWeight: 'bold', justifyContent: 'center' }}>{row.inua}</div>
           </div>
         ))}
       </div>
 
       <div className="comp-footer">
         <p className="comp-cta-text">Ready to transform your SME lending portfolio?</p>
-        <a href="/register" className="btn-cta" style={{ backgroundColor: '#2563eb' }}>Apply for Access Now →</a>
+        <a href="/register" className="btn-cta">Apply for Access Now →</a>
       </div>
     </section>
   );

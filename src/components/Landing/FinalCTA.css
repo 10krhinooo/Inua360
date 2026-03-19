@@ -51,22 +51,23 @@
 }
 
 .cta-title span.highlight {
-  color: #0f172a; /* Dark contrast */
+  color: #ffffff; /* Improved contrast for white text on orange in dark mode */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .btn-final {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: #0f172a; /* Dark contrast button on orange bg */
-  color: white;
+  background: white; /* Switch to white button for better contrast on orange in dark/light */
+  color: #F07B20;
   padding: 22px 56px;
   border-radius: 16px;
   font-weight: 800;
   font-size: 1.25rem;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
 }
 
 .btn-final:hover {

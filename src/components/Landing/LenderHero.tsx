@@ -4,11 +4,11 @@ import './Hero.css'; // Reusing base styles but with specific content
 
 const LenderHero: React.FC = () => {
   return (
-    <section className="hero-section" style={{ background: '#f8fafc' }}>
+    <section className="hero-section">
       <div className="hero-container">
         <div className="hero-content">
           <div className="hero-tagstrip">
-            <span className="hero-tag-pill" style={{ background: '#eef2ff', color: '#3730a3', borderColor: '#c7d2fe' }}>
+            <span className="hero-tag-pill">
               <BarChart3 size={14} />
               Built for Financial Institutions
             </span>
@@ -25,11 +25,11 @@ const LenderHero: React.FC = () => {
           </p>
 
           <div className="hero-cta-group">
-            <a href="/register" className="btn-primary">
-              Apply for Partner Portal →
+            <a href="#" className="btn-primary">
+              Partner with us →
             </a>
-            <a href="#features" className="btn-secondary">
-              See Risk Indicators
+            <a href="#" className="btn-secondary">
+              Book a Demo
             </a>
           </div>
 

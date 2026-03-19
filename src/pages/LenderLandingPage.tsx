@@ -15,7 +15,7 @@ const LenderLandingPage: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-[var(--bg-primary)] transition-colors duration-300">
             <Navbar persona="Lender" />
             <main>
                 <LenderHero />

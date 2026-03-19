@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { authAPI } from '../services/api';
 import './Auth.css';
 
 const Login: React.FC = () => {
@@ -9,10 +10,17 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
-    navigate('/dashboard');
+    try {
+      const response = await authAPI.login({ username: email, password });
+      localStorage.setItem('auth_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Invalid credentials. Please try again.');
+    }
   };
 
   return (
