@@ -12,37 +12,36 @@ import OnboardingWizard from './pages/OnboardingWizard';
 
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
-import { useEffect } from 'react';
 
 import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  useEffect(() => {
-    // Basic session check - if token exists, we're "logged in"
-    // In a full implementation, we'd verify the token with the backend
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      console.log('Session restored');
-    }
-  }, []);
 
   return (
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/lenders" element={<LenderLandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/onboarding" element={<OnboardingWizard />} />
-          
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="health" element={<HealthReport />} />
-            <Route path="funding" element={<Funding />} />
-            <Route path="alerts" element={<Alerts />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
+
+          {/* Protected/private Routes */}
+          <Route element={<ProtectedRoute requireOnboarding={false} />}>
+            <Route path="/onboarding" element={<OnboardingWizard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute requireOnboarding={true} />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="health" element={<HealthReport />} />
+              <Route path="funding" element={<Funding />} />
+              <Route path="alerts" element={<Alerts />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

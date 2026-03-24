@@ -39,7 +39,7 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('access_token');
     if (!token) {
       navigate('/login');
       return;

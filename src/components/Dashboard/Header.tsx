@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, User, Search, Menu, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import apiClient from '../../services/api';
 
 interface HeaderProps {
     setSidebarOpen: (isOpen: boolean) => void;
-    isSidebarCollapsed: boolean;
-    onOpenNotifications: () => void;
+    isSidebarCollapsed?: boolean;
+    onOpenNotifications?: () => void;
+}
+
+interface UserData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  profile_picture?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ setSidebarOpen, onOpenNotifications }) => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  // 1. Fetch the data when the header loads
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get('/auth/user/');
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data for header", error);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const getPageTitle = (path: string) => {
     if (path === '/dashboard') return 'Dashboard Overview';
@@ -25,6 +47,11 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen, onOpenNotifications }) 
   };
 
   const currentTitle = getPageTitle(location.pathname);
+
+  // 2. Calculate the dynamic name (Fallback to email or 'Business Owner' while loading)
+  const displayName = userData?.first_name 
+    ? `${userData.first_name} ${userData.last_name}`.trim() 
+    : userData?.email?.split('@')[0] || 'Business Owner';
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-[var(--border-primary)] bg-[var(--card-bg)] px-4 sm:px-6 sticky top-0 z-40 transition-colors duration-300">
@@ -68,12 +95,25 @@ const Header: React.FC<HeaderProps> = ({ setSidebarOpen, onOpenNotifications }) 
         
         <div className="flex items-center gap-3 border-l border-[var(--border-primary)] pl-3 sm:pl-6 transition-colors duration-300">
           <div className="hidden sm:flex flex-col text-right">
-            <span className="text-sm font-bold text-[var(--text-primary)]">John Doe</span>
+            {/* 3. Inject the dynamic display name here! */}
+            <span className="text-sm font-bold text-[var(--text-primary)]">{displayName}</span>
             <span className="text-[10px] font-bold text-[#F07B20] uppercase tracking-wider">Premium Plan</span>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-500/10 text-[#F07B20] border border-orange-100 dark:border-orange-500/20 shadow-sm transition-all duration-300">
-            <User className="h-6 w-6" />
+          
+          {/* 4. Inject the dynamic profile picture here! */}
+          <div className="flex h-10 w-10 overflow-hidden items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-500/10 text-[#F07B20] border border-orange-100 dark:border-orange-500/20 shadow-sm transition-all duration-300">
+            {userData?.profile_picture ? (
+              <img 
+                src={userData.profile_picture} 
+                alt={displayName} 
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer" // <--- CRITICAL: Google blocks images without this!
+              />
+            ) : (
+              <User className="h-6 w-6" />
+            )}
           </div>
+
         </div>
       </div>
     </header>

@@ -6,25 +6,57 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 // Create a configured Axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// --- FIREBASE AUTH INTERCEPTOR ---
-apiClient.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+// // Request Interceptor
+// apiClient.interceptors.request.use(
+//   async (config) => {
+//     try {
+//       const token = localStorage.getItem('auth_token');
+//       if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//       }
+//       return config;
+//     } catch (error) {
+//       return Promise.reject(error);
+//     }
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
+
+// Response Interceptor
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      // const refreshToken = localStorage.getItem('refresh_token');
+
+      // if (refreshToken) {
+      try {
+        await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { withCredentials: true });
+
+        // const newAccessToken = response.data.access;
+        // localStorage.setItem('auth_token', newAccessToken);
+
+        // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        // localStorage.removeItem('auth_token');
+        // localStorage.removeItem('refresh_token');
+        window.location.href = '/login';
       }
-      return config;
-    } catch (error) {
-      return Promise.reject(error);
+      // }
     }
-  },
-  (error) => {
     return Promise.reject(error);
   }
 );
@@ -63,9 +95,11 @@ export interface BusinessProfilePayload {
 
 // --- API ENDPOINT WRAPPERS ---
 export const authAPI = {
-  register: (data: any) => apiClient.post('/auth/register/', data),
-  login: (data: any) => apiClient.post('/auth/login/', data),
+  register: (data: any) => apiClient.post('/auth/register/', data), // eslint-disable-line @typescript-eslint/no-explicit-any
+  login: (data: any) => apiClient.post('/auth/login/', data), // eslint-disable-line @typescript-eslint/no-explicit-any
   googleAuth: (idToken: string) => apiClient.post('/auth/google/', { id_token: idToken }),
+  googleLogin: (token: string) => apiClient.post('/auth/google/', { token }),
+  logout: () => apiClient.post('/auth/logout/'),
 };
 
 export const analyticsAPI = {

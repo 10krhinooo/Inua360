@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 import { useTheme } from '../../context/ThemeContext';
+import { authAPI } from '../../services/api';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -34,6 +35,18 @@ const navigation = [
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onToggle }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error("Logout request failed: ", error);
+    } finally {
+      // localStorage.removeItem('auth_token');
+      // localStorage.removeItem('refresh_token');
+      navigate('/login');
+    }
+  };
 
   return (
     <>
@@ -108,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, isCollapsed, onTog
             {!isCollapsed && <span>Collapse Sidebar</span>}
           </button>
           
-          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 transition-colors">
+          <button onClick={handleLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 transition-colors">
             <LogOut className="h-5 w-5 shrink-0" />
             {(!isCollapsed || isOpen) && <span>Sign out</span>}
           </button>
