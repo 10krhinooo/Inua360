@@ -43,7 +43,7 @@ async function main() {
   if (res.status === 404) {
     console.error(`
 /api/waitlist returned 404. Usually:
-  • Redeploy this branch so Vercel picks up the root api/waitlist.ts Edge function.
+  • Redeploy this branch so Vercel picks up the root api/waitlist.js serverless function.
   • Or point WAITLIST_SMOKE_ORIGIN at a preview URL that includes the latest deploy.
 `);
     process.exit(1);
