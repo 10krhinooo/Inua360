@@ -99,23 +99,52 @@ export default async function handler(request: Request): Promise<Response> {
   const sheetsUrl = process.env.WAITLIST_GOOGLE_SCRIPT_URL?.trim();
   if (sheetsUrl) {
     try {
-      await fetch(sheetsUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          persona,
-          source,
-          submittedAt: new Date().toISOString(),
-        }),
+      const sheetsBody = JSON.stringify({
+        name,
+        email,
+        persona,
+        source,
+        submittedAt: new Date().toISOString(),
       });
+      // Google Apps Script often responds with 302; following it with fetch can upgrade
+      // POST → GET and drop the body. Re-POST manually to each Location until we get a final response.
+      await postJsonFollowingRedirects(sheetsUrl, sheetsBody);
     } catch {
       // Sheets is optional; email is primary
     }
   }
 
-  return jsonResponse({ ok: true });
+  return jsonResponse({ ok: true }, 200);
+}
+
+/** POST JSON and follow redirects without losing the body (fixes Google Apps Script Web App + Edge fetch). */
+async function postJsonFollowingRedirects(
+  startUrl: string,
+  jsonBody: string,
+): Promise<Response> {
+  const headers = { 'Content-Type': 'application/json' };
+  let url = startUrl;
+  for (let hop = 0; hop < 8; hop++) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: jsonBody,
+      redirect: 'manual',
+    });
+
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get('Location');
+      if (!loc) {
+        return res;
+      }
+      url = new URL(loc, url).href;
+      continue;
+    }
+
+    return res;
+  }
+
+  throw new Error('Too many redirects to Google Apps Script');
 }
 
 function jsonResponse(data: Record<string, unknown>, status: number): Response {
