@@ -30,7 +30,9 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
   }
 
   const controller = new AbortController();
-  const timeoutMs = 45_000;
+  // 25 s — must be less than the 35 s UI cap in useWaitlistSubmit so
+  // a clean error message is shown instead of the generic timeout fallback.
+  const timeoutMs = 25_000;
   const tid = setTimeout(() => controller.abort(), timeoutMs);
 
   let res: Response;
@@ -54,12 +56,14 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
 
   const ct = res.headers.get('content-type') || '';
   if (!ct.includes('application/json')) {
-    const snippet = (await res.text()).slice(0, 120);
-    throw new Error(
-      snippet.startsWith('<!')
-        ? 'Waitlist API is unavailable (got a web page instead of JSON). Confirm /api/waitlist is deployed on Vercel.'
-        : `Unexpected response (${res.status}). Try again in a moment.`,
-    );
+    const snippet = (await res.text()).slice(0, 200);
+    // HTML means the rewrite served index.html — API route not deployed
+    if (snippet.startsWith('<!')) {
+      throw new Error(
+        'The waitlist API is not reachable. Please try again in a moment — if this persists, contact support.',
+      );
+    }
+    throw new Error(`Unexpected server response (${res.status}). Please try again.`);
   }
 
   const data = (await res.json().catch(() => ({}))) as {
@@ -87,7 +91,7 @@ async function submitViaFormSubmitAjax(
 ): Promise<void> {
   const subject = `Inua360 waitlist — ${payload.persona} (${payload.source})`;
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 45_000);
+  const tid = setTimeout(() => controller.abort(), 25_000);
   let res: Response;
   try {
     res = await fetch(
