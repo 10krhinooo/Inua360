@@ -86,25 +86,38 @@ async function submitViaFormSubmitAjax(
   payload: WaitlistPayload,
 ): Promise<void> {
   const subject = `Inua360 waitlist — ${payload.persona} (${payload.source})`;
-  const res = await fetch(
-    `https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 45_000);
+  let res: Response;
+  try {
+    res = await fetch(
+      `https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          persona: payload.persona,
+          source: payload.source,
+          _subject: subject,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+        signal: controller.signal,
       },
-      body: JSON.stringify({
-        name: payload.name,
-        email: payload.email,
-        persona: payload.persona,
-        source: payload.source,
-        _subject: subject,
-        _template: 'table',
-        _captcha: 'false',
-      }),
-    },
-  );
+    );
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') {
+      throw new Error('FormSubmit request timed out. Try again.');
+    }
+    throw e;
+  } finally {
+    clearTimeout(tid);
+  }
 
   if (!res.ok) {
     const t = await res.text().catch(() => '');
