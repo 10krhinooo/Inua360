@@ -29,13 +29,41 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
     );
   }
 
-  const res = await fetch('/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeoutMs = 45_000;
+  const tid = setTimeout(() => controller.abort(), timeoutMs);
+
+  let res: Response;
+  try {
+    res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') {
+      throw new Error(
+        'Request timed out. Check your connection, then try again. If it keeps happening, the server may be busy.',
+      );
+    }
+    throw e;
+  } finally {
+    clearTimeout(tid);
+  }
+
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.includes('application/json')) {
+    const snippet = (await res.text()).slice(0, 120);
+    throw new Error(
+      snippet.startsWith('<!')
+        ? 'Waitlist API is unavailable (got a web page instead of JSON). Confirm /api/waitlist is deployed on Vercel.'
+        : `Unexpected response (${res.status}). Try again in a moment.`,
+    );
+  }
 
   const data = (await res.json().catch(() => ({}))) as {
+    ok?: boolean;
     error?: string;
     detail?: string;
   };
@@ -43,6 +71,13 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
   if (!res.ok) {
     const msg = [data.error, data.detail].filter(Boolean).join(' — ');
     throw new Error(msg || `Request failed (${res.status})`);
+  }
+
+  if (data.ok !== true) {
+    throw new Error(
+      [data.error, data.detail].filter(Boolean).join(' — ') ||
+        'Unexpected server response. Please try again.',
+    );
   }
 }
 
