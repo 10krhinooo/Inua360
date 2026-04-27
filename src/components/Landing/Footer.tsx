@@ -1,4 +1,5 @@
 import React from 'react';
+import { Twitter, Linkedin, Facebook, Instagram, Mail } from 'lucide-react';
 import './Footer.css';
 
 const Footer: React.FC = () => {
@@ -33,11 +34,21 @@ const Footer: React.FC = () => {
               An AI-powered platform helping Kenya's SMEs understand their business health, stay compliant, and access the right funding opportunities — faster.
             </p>
             <div className="footer-socials">
-              <a href="#" className="footer-social-btn" title="Twitter / X">𝕏</a>
-              <a href="#" className="footer-social-btn" title="LinkedIn">in</a>
-              <a href="#" className="footer-social-btn" title="Facebook">f</a>
-              <a href="#" className="footer-social-btn" title="Instagram">◎</a>
-              <a href="#" className="footer-social-btn" title="YouTube">▶</a>
+              <a href="https://x.com/Inua360" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Twitter / X">
+                <Twitter size={18} strokeWidth={2} />
+              </a>
+              <a href="https://www.linkedin.com/company/inua360" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="LinkedIn">
+                <Linkedin size={18} strokeWidth={2} />
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61575479657497" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
+                <Facebook size={18} strokeWidth={2} />
+              </a>
+              <a href="https://www.instagram.com/inua360" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram">
+                <Instagram size={18} strokeWidth={2} />
+              </a>
+              <a href="mailto:hello.inua360@gmail.com" className="footer-social-btn" title="Email">
+                <Mail size={18} strokeWidth={2} />
+              </a>
             </div>
           </div>
 
