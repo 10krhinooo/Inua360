@@ -95,16 +95,16 @@ export interface BusinessProfilePayload {
 
 // --- API ENDPOINT WRAPPERS ---
 export const authAPI = {
-  register: async (data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  register: async (_data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     return { data: { success: true } };
   },
-  login: async (data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  login: async (_data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     return { data: { access: 'mock-token', refresh: 'mock-refresh' } };
   },
-  googleAuth: async (idToken: string) => {
+  googleAuth: async (_idToken: string) => {
     return { data: { is_new_user: false } };
   },
-  googleLogin: async (token: string) => {
+  googleLogin: async (_token: string) => {
     return { data: { is_new_user: false } };
   },
   logout: async () => {

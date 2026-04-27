@@ -1,74 +1,9 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
-import { authAPI } from '../services/api';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Mail, ArrowRight } from 'lucide-react';
 import './Auth.css';
 
 const Register: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setErrorMsg('Please enter a valid email address');
-      return;
-    }
-
-    if (password.length < 8) {
-      setErrorMsg('Password must be at least 8 characters long');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setErrorMsg('Passwords do not match');
-      return;
-    }
-    try {
-      await authAPI.register({
-        username: email,
-        email: email,
-        password: password
-      });
-
-      await authAPI.login({ username: email, password });
-      // localStorage.setItem('auth_token', response.data.access);
-      // localStorage.setItem('refresh_token', response.data.refresh);
-      navigate('/onboarding');
-    } catch (error) {
-      console.error('Registration failed:', error);
-      setErrorMsg('Registration failed. Username might already be taken.');
-    }
-  };
-
-  const handleGoogleSuccess = async (credentialResponse: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-    // console.log(credentialResponse);
-    try {
-      const response = await authAPI.googleLogin(credentialResponse.credential);
-
-      // localStorage.setItem('auth_token', response.data.access);
-      // localStorage.setItem('refresh_token', response.data.refresh);
-
-      if (response.data.is_new_user) {
-        navigate('/onboarding');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error('Google login failed:', error);
-      setErrorMsg('Failed to authenticate with Google.');
-    }
-  };
-
   return (
     <div className="auth-page">
       <div className="auth-header">
