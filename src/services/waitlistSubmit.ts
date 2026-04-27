@@ -89,6 +89,12 @@ async function submitViaFormSubmitAjax(
   payload: WaitlistPayload,
 ): Promise<void> {
   const subject = `Inua360 waitlist — ${payload.persona} (${payload.source})`;
+  const messageBody =
+    `New waitlist signup\n\n` +
+    `Name: ${payload.name}\n` +
+    `Email: ${payload.email}\n` +
+    `Persona: ${payload.persona}\n` +
+    `Source: ${payload.source}`;
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), 30_000);
   let res: Response;
@@ -106,6 +112,7 @@ async function submitViaFormSubmitAjax(
           email: payload.email,
           persona: payload.persona,
           source: payload.source,
+          message: messageBody,
           _subject: subject,
           _template: 'table',
           _captcha: 'false',
@@ -122,8 +129,22 @@ async function submitViaFormSubmitAjax(
     clearTimeout(tid);
   }
 
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(t || `FormSubmit error (${res.status})`);
+  const text = await res.text().catch(() => '');
+  let accepted = res.ok;
+  if (accepted && text) {
+    try {
+      const parsed = JSON.parse(text) as { success?: boolean | string };
+      if (parsed.success === false || parsed.success === 'false') {
+        accepted = false;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  if (!accepted) {
+    throw new Error(
+      text ||
+        `FormSubmit error (${res.status}). Activate this email at formsubmit.co if you have not clicked the inbox link yet.`,
+    );
   }
 }
