@@ -1,5 +1,5 @@
 /**
- * Vercel Edge: receives waitlist JSON and forwards to FormSubmit (email) and optionally Google Apps Script (Sheets).
+ * Vercel Serverless (Node): receives waitlist JSON and forwards to FormSubmit (email) and optionally Google Apps Script (Sheets).
  *
  * Vercel env:
  *   WAITLIST_NOTIFY_EMAIL — inbox you verified with FormSubmit (check junk for their activation link the first time).
@@ -17,7 +17,9 @@
  */
 
 export const config = {
-  runtime: 'edge',
+  /** Node avoids Edge quirks with outbound fetch + env for FormSubmit / Google Script */
+  runtime: 'nodejs',
+  maxDuration: 30,
 };
 
 const corsHeaders = {
@@ -88,10 +90,25 @@ export default async function handler(request: Request): Promise<Response> {
     },
   );
 
-  if (!formSubmitRes.ok) {
-    const detail = await formSubmitRes.text().catch(() => '');
+  const formSubmitText = await formSubmitRes.text().catch(() => '');
+  let formSubmitAccepted = formSubmitRes.ok;
+  if (formSubmitAccepted && formSubmitText) {
+    try {
+      const parsed = JSON.parse(formSubmitText) as { success?: boolean | string };
+      if (parsed.success === false || parsed.success === 'false') {
+        formSubmitAccepted = false;
+      }
+    } catch {
+      /* non-JSON response — rely on HTTP status */
+    }
+  }
+
+  if (!formSubmitAccepted) {
     return jsonResponse(
-      { error: 'Could not send notification', detail: detail.slice(0, 200) },
+      {
+        error: 'Could not send notification',
+        detail: formSubmitText.slice(0, 400),
+      },
       502,
     );
   }

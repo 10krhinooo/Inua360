@@ -11,7 +11,7 @@ function getDevNotifyEmail(): string | undefined {
 }
 
 /**
- * Submissions in production go to `/api/waitlist` (Vercel Edge).
+ * Submissions in production go to `/api/waitlist` (Vercel Node serverless).
  * For local `npm run dev`, set `VITE_WAITLIST_NOTIFY_EMAIL` in `.env.local` to your FormSubmit address
  * or run `vercel dev` to use the real API route.
  * See repository `.env.example` for Vercel + FormSubmit setup and `npm run verify:waitlist`.
@@ -35,10 +35,14 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
     body: JSON.stringify(payload),
   });
 
-  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  const data = (await res.json().catch(() => ({}))) as {
+    error?: string;
+    detail?: string;
+  };
 
   if (!res.ok) {
-    throw new Error(data.error || `Request failed (${res.status})`);
+    const msg = [data.error, data.detail].filter(Boolean).join(' — ');
+    throw new Error(msg || `Request failed (${res.status})`);
   }
 }
 
