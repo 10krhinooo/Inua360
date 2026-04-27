@@ -30,9 +30,8 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
   }
 
   const controller = new AbortController();
-  // 25 s — must be less than the 35 s UI cap in useWaitlistSubmit so
-  // a clean error message is shown instead of the generic timeout fallback.
-  const timeoutMs = 25_000;
+  // Under 35s UI cap in useWaitlistSubmit
+  const timeoutMs = 30_000;
   const tid = setTimeout(() => controller.abort(), timeoutMs);
 
   let res: Response;
@@ -91,7 +90,7 @@ async function submitViaFormSubmitAjax(
 ): Promise<void> {
   const subject = `Inua360 waitlist — ${payload.persona} (${payload.source})`;
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 25_000);
+  const tid = setTimeout(() => controller.abort(), 30_000);
   let res: Response;
   try {
     res = await fetch(
