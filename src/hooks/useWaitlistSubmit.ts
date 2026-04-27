@@ -34,11 +34,7 @@ export function useWaitlistSubmit(defaultSource: string) {
           ),
         ]);
         setStatus('success');
-        addToast(
-          "You're on the list — check your inbox (and spam). Not there in a few minutes? Try submitting again after confirming FormSubmit activation.",
-          'success',
-          8000,
-        );
+        addToast("You're on the list! We'll be in touch soon.", 'success');
       } catch (e) {
         setStatus('error');
         const msg =

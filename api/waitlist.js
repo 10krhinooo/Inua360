@@ -1,9 +1,9 @@
 /**
- * Vercel Node serverless — FormSubmit notification email.
+ * Vercel Node serverless — waitlist via FormSubmit.
  * Env: WAITLIST_NOTIFY_EMAIL (required)
  *
- * If the UI succeeds but you get no email: check spam, FormSubmit activation link in inbox,
- * and Vercel logs — we only return 200 when FormSubmit accepts the submission.
+ * UX: always return { ok: true } for valid submissions so the app can show success.
+ * Email delivery issues are logged on the server — check Vercel Function logs + FormSubmit activation.
  */
 
 export default async function handler(request) {
@@ -76,54 +76,55 @@ export default async function handler(request) {
     `Persona: ${persona}\n` +
     `Source: ${source}`;
 
-  const formSubmitRes = await fetch(
-    `https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        persona,
-        source,
-        message: messageBody,
-        _subject: subject,
-        _template: 'table',
-        _captcha: 'false',
-      }),
-    },
-  );
-
-  const formSubmitText = await formSubmitRes.text().catch(() => '');
-  let accepted = formSubmitRes.ok;
-
-  if (accepted && formSubmitText) {
-    try {
-      const parsed = JSON.parse(formSubmitText);
-      if (parsed.success === false || parsed.success === 'false') {
-        accepted = false;
-      }
-    } catch {
-      /* non-JSON */
-    }
-  }
-
-  if (!accepted) {
-    console.error('[waitlist] FormSubmit rejected:', formSubmitRes.status, formSubmitText.slice(0, 500));
-    return jsonResponse(
+  try {
+    const formSubmitRes = await fetch(
+      `https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`,
       {
-        error: 'Email notification could not be sent',
-        detail:
-          formSubmitText.slice(0, 400) ||
-          'Open your WAITLIST inbox and click the FormSubmit activation link (check spam). Then try again.',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          persona,
+          source,
+          message: messageBody,
+          _subject: subject,
+          _template: 'table',
+          _captcha: 'false',
+        }),
       },
-      502,
     );
+
+    const formSubmitText = await formSubmitRes.text().catch(() => '');
+
+    if (!formSubmitRes.ok) {
+      console.error(
+        '[waitlist] FormSubmit HTTP',
+        formSubmitRes.status,
+        formSubmitText.slice(0, 400),
+      );
+    } else {
+      try {
+        const parsed = JSON.parse(formSubmitText);
+        if (parsed.success === false || parsed.success === 'false') {
+          console.warn(
+            '[waitlist] FormSubmit has not activated yet for',
+            notifyEmail,
+            '— click the confirmation email from FormSubmit (check spam).',
+          );
+        } else {
+          console.log('[waitlist] FormSubmit OK:', formSubmitText.slice(0, 200));
+        }
+      } catch {
+        console.log('[waitlist] FormSubmit response (non-JSON):', formSubmitText.slice(0, 200));
+      }
+    }
+  } catch (err) {
+    console.error('[waitlist] FormSubmit fetch failed:', err?.message ?? err);
   }
 
-  console.log('[waitlist] FormSubmit OK:', formSubmitText.slice(0, 200));
   return jsonResponse({ ok: true }, 200);
 }

@@ -21,7 +21,11 @@ export async function submitWaitlist(payload: WaitlistPayload): Promise<void> {
 
   if (import.meta.env.DEV) {
     if (devEmail) {
-      await submitViaFormSubmitAjax(devEmail, payload);
+      try {
+        await submitViaFormSubmitAjax(devEmail, payload);
+      } catch (e) {
+        console.warn('[waitlist dev] FormSubmit:', e);
+      }
       return;
     }
     throw new Error(
