@@ -1,8 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
+import type { FormEvent } from 'react';
 import { Twitter, Linkedin, Facebook, Instagram, Mail } from 'lucide-react';
+import { submitWaitlist } from '../../services/waitlistSubmit';
+import { useToast } from '../../context/ToastContext';
 import './Footer.css';
 
 const Footer: React.FC = () => {
+  const { addToast } = useToast();
+  const [email, setEmail] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const onNewsletter = async (e: FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed) return;
+    setBusy(true);
+    try {
+      await submitWaitlist({
+        name: 'Newsletter (footer)',
+        email: trimmed,
+        persona: 'Newsletter',
+        source: 'footer-newsletter',
+      });
+      setEmail('');
+      addToast("Thanks — we'll send updates to your inbox.", 'success');
+    } catch (err) {
+      addToast(
+        err instanceof Error ? err.message : 'Could not subscribe. Try again.',
+        'error',
+        8000,
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <footer className="footer-wrapper">
       <div className="footer-inner">
@@ -14,10 +46,21 @@ const Footer: React.FC = () => {
               SME insights, funding tips &amp;<br /><em>platform updates.</em>
             </h3>
           </div>
-          <div className="footer-newsletter-form">
-            <input type="email" placeholder="Enter your business email" />
-            <button>Subscribe →</button>
-          </div>
+          <form className="footer-newsletter-form" onSubmit={onNewsletter}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your business email"
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+              required
+              disabled={busy}
+              aria-label="Business email for updates"
+            />
+            <button type="submit" disabled={busy}>
+              {busy ? '…' : 'Subscribe →'}
+            </button>
+          </form>
         </div>
 
         {/* ── MAIN COLUMNS ── */}
@@ -31,7 +74,7 @@ const Footer: React.FC = () => {
               </div>
             </a>
             <p className="footer-brand-desc">
-              An AI-powered platform helping Kenya's SMEs understand their business health, stay compliant, and access the right funding opportunities — faster.
+              An AI-powered platform helping Kenya&apos;s SMEs understand their business health, stay compliant, and access the right funding opportunities — faster.
             </p>
             <div className="footer-socials">
               <a href="https://x.com/Inua360" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Twitter / X">

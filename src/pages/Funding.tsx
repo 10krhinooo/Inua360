@@ -28,7 +28,11 @@ const Funding: React.FC = () => {
 
         if (historyRes.data && historyRes.data.length > 0 && profileRes.data) {
           const latestHistory = historyRes.data[0];
-          const profile = profileRes.data as any; // mockApi returns a single object
+          const profile = profileRes.data as {
+            revenue: number;
+            tax_registered: boolean;
+            bank_balance: number;
+          };
 
           // 1. Determine base eligibility and risk
           const isEligible = latestHistory.funding_readiness >= 70;

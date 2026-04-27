@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../context/useTheme';
 import { Sun, Moon, Menu } from 'lucide-react';
 import { useState } from 'react';
 
@@ -58,7 +58,7 @@ const Navbar: React.FC<NavbarProps> = ({ persona }) => {
             {persona !== 'Lender' ? (
               <>
                 <Link to="/login" className="text-sm font-bold text-[var(--text-primary)] hover:text-orange-500 transition-colors">
-                  LOG IN
+                  EARLY ACCESS
                 </Link>
                 <a href="#join-waitlist" className="rounded-xl bg-orange-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all transform hover:-translate-y-0.5 active:scale-95">
                   {ctaText}
@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({ persona }) => {
           <a href="#benefits" className="block text-lg font-bold text-[var(--text-primary)] py-2 border-b border-[var(--border-primary)]/50">Benefits</a>
           
           <div className="pt-4 flex flex-col gap-4">
-             <Link to="/login" className="w-full py-4 text-center font-bold text-[var(--text-primary)] border border-orange-500/20 rounded-2xl">LOG IN</Link>
+             <Link to="/login" className="w-full py-4 text-center font-bold text-[var(--text-primary)] border border-orange-500/20 rounded-2xl">EARLY ACCESS</Link>
              <a href="#join-waitlist" className="w-full py-4 text-center font-bold text-white bg-orange-600 rounded-2xl shadow-lg shadow-orange-500/20">{ctaText}</a>
           </div>
         </div>

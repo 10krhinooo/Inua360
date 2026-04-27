@@ -57,8 +57,11 @@ const Alerts: React.FC = () => {
         // Fetch Profile to get current Alert Preferences
         const profileResponse = await mockApi.getProfile();
         if (profileResponse.data) {
-          const profile = profileResponse.data as any; // mockApi returns a single object in data
-          setProfileId(profile.id);
+          const profile = profileResponse.data as {
+            id?: number;
+            alert_preferences?: Partial<AlertPreferences>;
+          };
+          if (typeof profile.id === 'number') setProfileId(profile.id);
           
           // Merge backend preferences with defaults to ensure all keys exist
           if (profile.alert_preferences && Object.keys(profile.alert_preferences).length > 0) {

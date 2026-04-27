@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import NotificationsPanel from './NotificationsPanel';
-import { ToastProvider } from '../../context/ToastContext';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -11,7 +10,6 @@ const DashboardLayout = () => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <ToastProvider>
       <div className="flex h-screen overflow-hidden bg-[var(--bg-secondary)] text-[var(--text-primary)] font-['Poppins']">
         <Sidebar 
           isOpen={sidebarOpen} 
@@ -38,7 +36,6 @@ const DashboardLayout = () => {
           />
         </div>
       </div>
-    </ToastProvider>
   );
 };
 

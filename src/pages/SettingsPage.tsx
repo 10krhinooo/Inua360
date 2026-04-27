@@ -8,10 +8,30 @@ import {
   RefreshCw, CheckCircle2,
   Plus
 } from 'lucide-react';
-import { analyticsAPI } from '../services/api';
+import { analyticsAPI, type AlertPreferences } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/useTheme';
+
+function SettingsToggle({
+  active,
+  onToggle,
+}: {
+  active: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${active ? 'bg-[#F07B20]' : 'bg-[var(--border-primary)] opacity-40'}`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${active ? 'translate-x-5' : 'translate-x-0'}`}
+      />
+    </button>
+  );
+}
 
 const SettingsPage = () => {
   const navigate = useNavigate();
@@ -55,12 +75,16 @@ const SettingsPage = () => {
   }, []);
 
   // Save settings helper
-  const saveSettings = async (newNotifications: any, newChannels: any) => {
+  const saveSettings = async (
+    newNotifications: typeof notifications,
+    newChannels: typeof channels,
+  ) => {
     if (!profileId) return;
     try {
       await analyticsAPI.updateProfile(profileId, {
         alert_preferences: {
-          categories: newNotifications,
+          // UI uses a different key set than the API type; payload is passed through as before
+          categories: newNotifications as unknown as AlertPreferences['categories'],
           channels: newChannels
         }
       });
@@ -74,15 +98,6 @@ const SettingsPage = () => {
     localStorage.removeItem('refresh_token');
     navigate('/login');
   };
-
-  const Toggle = ({ active, onToggle }: { active: boolean; onToggle: () => void }) => (
-    <button 
-      onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${active ? 'bg-[#F07B20]' : 'bg-[var(--border-primary)] opacity-40'}`}
-    >
-      <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${active ? 'translate-x-5' : 'translate-x-0'}`} />
-    </button>
-  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -137,7 +152,7 @@ const SettingsPage = () => {
                     <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-wider">Switch to dark appearance</span>
                 </div>
               </div>
-              <Toggle active={theme === 'dark'} onToggle={toggleTheme} />
+              <SettingsToggle active={theme === 'dark'} onToggle={toggleTheme} />
             </div>
           </div>
         </div>
@@ -207,7 +222,7 @@ const SettingsPage = () => {
                 <span className="text-sm font-bold text-[var(--text-primary)]">Daily Cash Logs</span>
                 <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-widest">Ask me to log cash sales via WhatsApp</span>
               </div>
-              <Toggle active={quickLog} onToggle={() => setQuickLog(!quickLog)} />
+              <SettingsToggle active={quickLog} onToggle={() => setQuickLog(!quickLog)} />
             </div>
           </div>
         </div>
@@ -243,7 +258,7 @@ const SettingsPage = () => {
                             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{channel.desc}</span>
                         </div>
                     </div>
-                    <Toggle 
+                    <SettingsToggle 
                         active={channels[channel.id as keyof typeof channels]} 
                         onToggle={() => {
                             const newChannels = {...channels, [channel.id]: !channels[channel.id as keyof typeof channels]};
@@ -282,7 +297,7 @@ const SettingsPage = () => {
                         <span className="text-sm font-bold text-[var(--text-primary)]">{notif.name}</span>
                         <span className="text-[10px] text-[var(--text-secondary)] font-bold opacity-40 uppercase tracking-widest">{notif.desc}</span>
                     </div>
-                    <Toggle 
+                    <SettingsToggle 
                         active={notifications[notif.id as keyof typeof notifications]} 
                         onToggle={() => {
                             const newNotifs = {...notifications, [notif.id]: !notifications[notif.id as keyof typeof notifications]};
