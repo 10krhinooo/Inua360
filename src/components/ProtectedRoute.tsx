@@ -7,7 +7,7 @@
 
 // const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 //   const location = useLocation();
-  
+
 //   // Check if the user has a token in local storage
 //   const isAuthenticated = !!localStorage.getItem('auth_token');
 
@@ -31,12 +31,12 @@ import apiClient from '../services/api';
 import { Activity } from 'lucide-react';
 
 interface ProtectedRouteProps {
-    children?: React.ReactNode;
-    requireOnboarding: boolean;
+  children?: React.ReactNode;
+  requireOnboarding: boolean;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireOnboarding = true }) => {
-//   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  //   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [authStatus, setAuthStatus] = useState<'loading' | 'unauth' | 'needs_onboarding' | 'fully_onboarded'>('loading');
   const location = useLocation();
 
@@ -59,12 +59,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireOnboar
     verifySession();
   }, [location.pathname]);
 
-//   // Show nothing (or a loading spinner) while checking the cookie
-//   if (isAuthenticated === null) return <div className="p-10 text-center">Verifying session...</div>;
+  //   // Show nothing (or a loading spinner) while checking the cookie
+  //   if (isAuthenticated === null) return <div className="p-10 text-center">Verifying session...</div>;
 
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" state={{ from: location }} replace />;
-//   }
+  //   if (!isAuthenticated) {
+  //     return <Navigate to="/login" state={{ from: location }} replace />;
+  //   }
 
   if (authStatus === 'loading') {
     return (

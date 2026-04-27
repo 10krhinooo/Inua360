@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BellRing, TrendingDown, PackageMinus, TrendingUp, 
-  CheckCircle2, Settings2, AlertCircle, Activity, X, Mail
+  CheckCircle2, Settings2, AlertCircle, X, Mail,
+  Twitter, Linkedin, Instagram, Facebook
 } from 'lucide-react';
-import { analyticsAPI, type AlertPreferences } from '../services/api';
+import { type AlertPreferences } from '../services/api';
+import { mockApi } from '../services/mockApi';
 
 const iconMap: Record<string, React.ElementType> = {
   sales: TrendingDown,
@@ -49,13 +51,13 @@ const Alerts: React.FC = () => {
     const fetchData = async () => {
       try {
         // Fetch Alerts
-        const alertsResponse = await analyticsAPI.getAlerts();
+        const alertsResponse = await mockApi.getAlerts();
         setAlerts(alertsResponse.data);
 
         // Fetch Profile to get current Alert Preferences
-        const profileResponse = await analyticsAPI.getProfile();
-        if (profileResponse.data && profileResponse.data.length > 0) {
-          const profile = profileResponse.data[0];
+        const profileResponse = await mockApi.getProfile();
+        if (profileResponse.data) {
+          const profile = profileResponse.data as any; // mockApi returns a single object in data
           setProfileId(profile.id);
           
           // Merge backend preferences with defaults to ensure all keys exist
@@ -75,7 +77,7 @@ const Alerts: React.FC = () => {
 
   const handleResolve = async (id: number) => {
     try {
-      await analyticsAPI.resolveAlert(id);
+      await mockApi.resolveAlert(id);
       setAlerts(alerts.map(alert => 
         alert.id === id ? { ...alert, is_resolved: true } : alert
       ));
@@ -89,7 +91,7 @@ const Alerts: React.FC = () => {
     setIsSaving(true);
     try {
       // Patch the BusinessProfile with the new JSON preferences
-      await analyticsAPI.updateProfile(profileId, { 
+      await mockApi.updateProfile(profileId, { 
         alert_preferences: preferences 
       });
       setIsSettingsOpen(false);
@@ -136,9 +138,13 @@ const Alerts: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
-        <Activity className="h-10 w-10 animate-pulse text-orange-500 mb-4" />
-        <p>Loading your active alerts...</p>
+      <div className="mx-auto max-w-4xl space-y-8 animate-pulse">
+        <div className="h-16 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/3"></div>
+        <div className="space-y-4">
+          <div className="h-28 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
+          <div className="h-28 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
+          <div className="h-28 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
+        </div>
       </div>
     );
   }
@@ -202,10 +208,31 @@ const Alerts: React.FC = () => {
         })}
 
         {alerts.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border-primary)] bg-[var(--card-bg)] py-12 text-center transition-colors duration-300">
-            <CheckCircle2 className="h-10 w-10 text-green-500 mb-3" />
-            <h3 className="text-lg font-semibold text-[var(--text-primary)]">All Clear!</h3>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">No active alerts. Your business is running smoothly.</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border-primary)] bg-[var(--card-bg)] py-12 px-6 text-center transition-colors duration-300">
+            <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">All Clear!</h3>
+            <p className="mt-2 text-[var(--text-secondary)] max-w-md">You have no active alerts. Your business is running smoothly and all metrics are within expected ranges.</p>
+            
+            <div className="mt-8 pt-8 border-t border-[var(--border-primary)] w-full max-w-md">
+              <p className="text-sm font-semibold text-[var(--text-primary)] mb-4">Need help or have questions?</p>
+              <div className="flex justify-center gap-4">
+                <a href="mailto:hello.inua360@gmail.com" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Email Us">
+                  <Mail className="h-5 w-5" />
+                </a>
+                <a href="https://x.com/Inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="X / Twitter">
+                  <Twitter className="h-5 w-5" />
+                </a>
+                <a href="https://www.linkedin.com/company/inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="LinkedIn">
+                  <Linkedin className="h-5 w-5" />
+                </a>
+                <a href="https://www.instagram.com/inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Instagram">
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61575479657497" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Facebook">
+                  <Facebook className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </div>

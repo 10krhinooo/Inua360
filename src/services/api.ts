@@ -95,11 +95,21 @@ export interface BusinessProfilePayload {
 
 // --- API ENDPOINT WRAPPERS ---
 export const authAPI = {
-  register: (data: any) => apiClient.post('/auth/register/', data), // eslint-disable-line @typescript-eslint/no-explicit-any
-  login: (data: any) => apiClient.post('/auth/login/', data), // eslint-disable-line @typescript-eslint/no-explicit-any
-  googleAuth: (idToken: string) => apiClient.post('/auth/google/', { id_token: idToken }),
-  googleLogin: (token: string) => apiClient.post('/auth/google/', { token }),
-  logout: () => apiClient.post('/auth/logout/'),
+  register: async (data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    return { data: { success: true } };
+  },
+  login: async (data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    return { data: { access: 'mock-token', refresh: 'mock-refresh' } };
+  },
+  googleAuth: async (idToken: string) => {
+    return { data: { is_new_user: false } };
+  },
+  googleLogin: async (token: string) => {
+    return { data: { is_new_user: false } };
+  },
+  logout: async () => {
+    return { data: { success: true } };
+  },
 };
 
 export const analyticsAPI = {

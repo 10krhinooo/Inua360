@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
               <li><a href="#">Careers</a></li>
               <li><a href="#">Press &amp; Media</a></li>
               <li><a href="#">Blog &amp; Insights</a></li>
-              <li><a href="#">Contact Us</a></li>
+              <li><a href="mailto:hello.inua360@gmail.com">Contact Us</a></li>
             </ul>
           </div>
 

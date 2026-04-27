@@ -17,11 +17,16 @@ const WaitlistSection: React.FC<WaitlistSectionProps> = ({ persona }) => {
                 Be among the first to access Inua360. Your input shapes what we build for {persona === 'Lender' ? 'financial institutions' : 'SMEs'} in Kenya.
             </p>
 
-            <form className="waitlist-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="waitlist-form" action="https://formsubmit.co/hello.inua360@gmail.com" method="POST">
+                <input type="hidden" name="_next" value="https://inua360.vercel.app/" />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_subject" value="New Inua360 Waitlist Submission!" />
+
                 <div className="form-group">
                     <label htmlFor="name">Name *</label>
                     <input 
                         type="text" 
+                        name="name"
                         id="name" 
                         className="form-input" 
                         placeholder="Your name" 
@@ -33,6 +38,7 @@ const WaitlistSection: React.FC<WaitlistSectionProps> = ({ persona }) => {
                     <label htmlFor="email">Email *</label>
                     <input 
                         type="email" 
+                        name="email"
                         id="email" 
                         className="form-input" 
                         placeholder="your@email.com" 
@@ -42,7 +48,7 @@ const WaitlistSection: React.FC<WaitlistSectionProps> = ({ persona }) => {
 
                 <div className="form-group form-full">
                     <label htmlFor="persona">I am a... *</label>
-                    <select id="persona" className="form-select" required defaultValue={persona || ""}>
+                    <select id="persona" name="persona" className="form-select" required defaultValue={persona || ""}>
                         <option value="" disabled>Select one</option>
                         <option value="SME">SME Founder / Owner</option>
                         <option value="Lender">Bank / Financial Institution</option>

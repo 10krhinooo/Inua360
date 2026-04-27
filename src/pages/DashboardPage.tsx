@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Activity, BellRing, Landmark, ArrowRight, Clock, RefreshCw, TrendingUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { mockApi } from '../services/mockApi';
 import { analyticsAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
@@ -18,7 +19,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchDashboardData = useCallback(async () => {
     try {
-      const response = await analyticsAPI.getHealthHistory();
+      const response = await mockApi.getHealthHistory();
       
       if (response.data && response.data.length > 0) {
         const latestReport = response.data[0];
@@ -64,9 +65,14 @@ const DashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
-        <Activity className="h-10 w-10 animate-pulse text-[#F07B20] mb-4" />
-        <p>Loading your dashboard...</p>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full"></div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+          <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+          <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+        </div>
+        <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full"></div>
       </div>
     );
   }

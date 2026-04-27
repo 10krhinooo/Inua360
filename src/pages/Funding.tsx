@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Landmark, CheckCircle2, XCircle, DollarSign, 
-  Building, ArrowRight, ShieldCheck, Activity, AlertTriangle
+  Building, ArrowRight, ShieldCheck, AlertTriangle,
+  Mail, Twitter, Linkedin, Instagram, Facebook
 } from 'lucide-react';
-import { analyticsAPI } from '../services/api';
+import { mockApi } from '../services/mockApi';
 
 const Funding: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,13 +22,13 @@ const Funding: React.FC = () => {
       try {
         // Fetch both History and Profile in parallel for speed
         const [historyRes, profileRes] = await Promise.all([
-          analyticsAPI.getHealthHistory(),
-          analyticsAPI.getProfile()
+          mockApi.getHealthHistory(),
+          mockApi.getProfile()
         ]);
 
-        if (historyRes.data.length > 0 && profileRes.data.length > 0) {
+        if (historyRes.data && historyRes.data.length > 0 && profileRes.data) {
           const latestHistory = historyRes.data[0];
-          const profile = profileRes.data[0];
+          const profile = profileRes.data as any; // mockApi returns a single object
 
           // 1. Determine base eligibility and risk
           const isEligible = latestHistory.funding_readiness >= 70;
@@ -90,9 +91,15 @@ const Funding: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
-        <Activity className="h-10 w-10 animate-pulse text-orange-600 mb-4" />
-        <p>Analyzing lending eligibility...</p>
+      <div className="mx-auto max-w-5xl space-y-8 animate-pulse">
+        <div className="h-16 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/3"></div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl lg:col-span-1"></div>
+          <div className="flex flex-col lg:col-span-2 space-y-6">
+            <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+            <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -243,8 +250,29 @@ const Funding: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="p-12 text-center">
-                  <p className="text-sm text-slate-500">Your current business health score does not meet the minimum requirements for our lending partners. Focus on improving your operational efficiency and compliance.</p>
+                <div className="p-12 text-center flex flex-col items-center">
+                  <p className="text-[var(--text-secondary)] max-w-md mb-8">Your current business health score does not meet the minimum requirements for our lending partners. Focus on improving your operational efficiency and compliance.</p>
+                  
+                  <div className="pt-8 border-t border-[var(--border-primary)] w-full max-w-md">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] mb-4">Want advice on improving your score? Reach out!</p>
+                    <div className="flex justify-center gap-4">
+                      <a href="mailto:hello.inua360@gmail.com" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Email Us">
+                        <Mail className="h-5 w-5" />
+                      </a>
+                      <a href="https://x.com/Inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="X / Twitter">
+                        <Twitter className="h-5 w-5" />
+                      </a>
+                      <a href="https://www.linkedin.com/company/inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="LinkedIn">
+                        <Linkedin className="h-5 w-5" />
+                      </a>
+                      <a href="https://www.instagram.com/inua360" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Instagram">
+                        <Instagram className="h-5 w-5" />
+                      </a>
+                      <a href="https://www.facebook.com/profile.php?id=61575479657497" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--text-secondary)] hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors" title="Facebook">
+                        <Facebook className="h-5 w-5" />
+                      </a>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

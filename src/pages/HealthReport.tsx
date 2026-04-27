@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { analyticsAPI } from '../services/api';
+import { mockApi } from '../services/mockApi';
 
 const HealthReport: React.FC = () => {
   const [reportData, setReportData] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -9,8 +9,8 @@ const HealthReport: React.FC = () => {
   useEffect(() => {
     const fetchHealthData = async () => {
       try {
-        // Fetch historical data from Django
-        const response = await analyticsAPI.getHealthHistory();
+        // Fetch historical data from mock backend
+        const response = await mockApi.getHealthHistory();
         
         // Grab the most recent report (index 0)
         if (response.data && response.data.length > 0) {
@@ -27,7 +27,7 @@ const HealthReport: React.FC = () => {
               { label: 'Compliance Risk', value: latestReport.compliance_risk, level: latestReport.compliance_risk < 30 ? 'Low' : 'High', color: 'bg-slate-300' },
             ],
             // Map the JSON array of insights from the database
-            insights: latestReport.ai_insights.map((insight: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+            insights: (latestReport.ai_insights || []).map((insight: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
               icon: insight.triggered ? AlertTriangle : CheckCircle2,
               title: insight.flag.replace('_', ' ').toUpperCase(),
               desc: `AI flagged this metric based on your current data.`,
@@ -47,9 +47,13 @@ const HealthReport: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-[var(--text-secondary)]">
-        <Activity className="h-10 w-10 animate-pulse text-orange-500 mb-4" />
-        <p>Loading your AI insights...</p>
+      <div className="mx-auto max-w-5xl space-y-8 animate-pulse">
+        <div className="h-16 bg-slate-200 dark:bg-slate-800 rounded-xl w-1/3"></div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+          <div className="h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl"></div>
+        </div>
+        <div className="h-48 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full"></div>
       </div>
     );
   }
