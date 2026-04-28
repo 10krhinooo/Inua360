@@ -1,9 +1,11 @@
 /**
- * Vercel Node serverless — waitlist via FormSubmit.
- * Env: WAITLIST_NOTIFY_EMAIL (required)
+ * Vercel Node serverless — waitlist via FormSubmit (email delivery only).
+ * Required env var: WAITLIST_NOTIFY_EMAIL
+ * Set this in Vercel → Project → Settings → Environment Variables.
  *
- * UX: always return { ok: true } for valid submissions so the app can show success.
- * Email delivery issues are logged on the server — check Vercel Function logs + FormSubmit activation.
+ * FormSubmit activation: the first submission to a new email triggers a
+ * one-time confirmation email from FormSubmit. Click it (check spam) or
+ * no emails will be delivered.
  */
 
 export default async function handler(request) {
@@ -59,11 +61,11 @@ export default async function handler(request) {
     typeof process.env.WAITLIST_NOTIFY_EMAIL === 'string'
       ? process.env.WAITLIST_NOTIFY_EMAIL.trim()
       : '';
+
   if (!notifyEmail) {
+    console.error('[waitlist] WAITLIST_NOTIFY_EMAIL env var is not set — set it in Vercel → Project → Settings → Environment Variables.');
     return jsonResponse(
-      {
-        error: 'Server misconfiguration: WAITLIST_NOTIFY_EMAIL is not set',
-      },
+      { error: 'Server misconfiguration: WAITLIST_NOTIFY_EMAIL is not set. Contact the site administrator.' },
       500,
     );
   }
@@ -75,6 +77,10 @@ export default async function handler(request) {
     `Email: ${email}\n` +
     `Persona: ${persona}\n` +
     `Source: ${source}`;
+
+  // Abort FormSubmit after 8s — stays inside Vercel's 10s free-tier limit
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 8_000);
 
   try {
     const formSubmitRes = await fetch(
@@ -95,6 +101,7 @@ export default async function handler(request) {
           _template: 'table',
           _captcha: 'false',
         }),
+        signal: controller.signal,
       },
     );
 
@@ -111,19 +118,25 @@ export default async function handler(request) {
         const parsed = JSON.parse(formSubmitText);
         if (parsed.success === false || parsed.success === 'false') {
           console.warn(
-            '[waitlist] FormSubmit has not activated yet for',
+            '[waitlist] FormSubmit returned success:false for',
             notifyEmail,
-            '— click the confirmation email from FormSubmit (check spam).',
+            '— check that you clicked the activation email FormSubmit sent to that inbox (check spam).',
           );
         } else {
-          console.log('[waitlist] FormSubmit OK:', formSubmitText.slice(0, 200));
+          console.log('[waitlist] FormSubmit delivered OK for', notifyEmail);
         }
       } catch {
         console.log('[waitlist] FormSubmit response (non-JSON):', formSubmitText.slice(0, 200));
       }
     }
   } catch (err) {
-    console.error('[waitlist] FormSubmit fetch failed:', err?.message ?? err);
+    if (err?.name === 'AbortError') {
+      console.error('[waitlist] FormSubmit timed out after 8s — check Vercel function logs.');
+    } else {
+      console.error('[waitlist] FormSubmit fetch failed:', err?.message ?? err);
+    }
+  } finally {
+    clearTimeout(tid);
   }
 
   return jsonResponse({ ok: true }, 200);
