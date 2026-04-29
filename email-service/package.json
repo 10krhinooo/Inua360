@@ -1,0 +1,20 @@
+{
+  "name": "inua360-email-service",
+  "version": "1.0.0",
+  "description": "Standalone email service for Inua360 — handles waitlist confirmation emails via Gmail SMTP",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemailer": "^6.9.14"
+  }
+}
